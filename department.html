@@ -1,27 +1,44 @@
 <!DOCTYPE html>
+<!-- HTML5 문서 타입을 선언합니다. -->
 <html lang="ko">
+<!-- 한국어 웹페이지임을 명시합니다. -->
 <head>
+    <!-- 문서의 메타데이터와 링크 요소를 포함하는 헤더 부분입니다. -->
     <meta charset="UTF-8">
+    <!-- 문자의 인코딩 방식을 UTF-8로 설정합니다. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 반응형 웹 디자인을 위해 뷰포트 설정을 합니다. -->
     <title>학과 안내 - IT전자과</title>
+    <!-- 웹페이지의 제목을 설정합니다. 브라우저 탭에 표시됩니다. -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS 프레임워크를 사용하기 위한 스크립트 링크입니다. -->
 </head>
 <body>
-    <main class="min-h-screen p-4 bg-gradient-to-b from-blue-50 to-white">
+    <!-- 웹페이지의 실제 내용을 담는 본문 부분입니다. -->
+    <main class="min-h-screen p-4 bg-gradient-to-b from-blue-50 to-white pb-20">
+        <!-- 메인 콘텐츠 영역입니다. 최소 높이를 화면 전체로 설정하고 하단에 여백을 추가합니다. -->
         <div class="max-w-4xl mx-auto">
+            <!-- 콘텐츠를 중앙에 배치하고 최대 너비를 설정합니다. -->
             <h1 class="text-3xl font-bold text-blue-800 mb-6">학과 안내</h1>
+            <!-- 학과 안내 제목입니다. -->
             
             <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <!-- 학과 소개 섹션입니다. 배경색, 패딩, 모서리 둥글기, 그림자, 하단 여백을 설정합니다. -->
                 <h2 class="text-xl font-semibold mb-4">IT전자과 소개</h2>
+                <!-- 소제목입니다. -->
                 <p class="text-gray-700 mb-4">
+                    <!-- 학과 소개 내용입니다. 글자색과 하단 여백을 설정합니다. -->
                     IT전자과는 전자제품을 만들기 위한 전자회로의 설계·제작·생산에 대해 학습하고 IT기술을 접목하여 소프트웨어 융복합 기술 분야의 전문가를 양성합니다. 
                     또한 전자제품을 원격으로 제어하기 위한 유무선 통신망 구축 기술 함양을 통해 전자, 소프트웨어, 통신, 항공 분야의 인재 양성을 최종 목표로 두고 있습니다.
                 </p>
             </div>
 
             <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <!-- 주요 교육 분야 섹션입니다. -->
                 <h2 class="text-xl font-semibold mb-4">주요 교육 분야</h2>
+                <!-- 소제목입니다. -->
                 <ul class="list-disc list-inside text-gray-700">
+                    <!-- 교육 분야 목록입니다. -->
                     <li>전자공학 기초 및 응용</li>
                     <li>정보통신 기술</li>
                     <li>임베디드 시스템</li>
@@ -30,10 +47,12 @@
             </div>
         </div>
     </main>
-    <!-- 메인으로 돌아가기 버튼 -->
+    <!-- 메인으로 돌아가기 버튼 영역입니다. -->
     <div class="fixed bottom-0 left-0 right-0 text-center p-4 bg-white shadow-lg">
+        <!-- 화면 하단에 고정된 div입니다. -->
         <a href="index.html" 
            class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            <!-- 메인 페이지로 이동하는 링크 버튼입니다. -->
             메인으로 돌아가기
         </a>
     </div>

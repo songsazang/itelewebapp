@@ -1,37 +1,54 @@
 <!DOCTYPE html>
+<!-- HTML5 문서 타입을 선언합니다. -->
 <html lang="ko">
+<!-- 한국어 웹페이지임을 명시합니다. -->
 <head>
+    <!-- 문서의 메타데이터와 링크 요소를 포함하는 헤더 부분입니다. -->
     <meta charset="UTF-8">
+    <!-- 문자의 인코딩 방식을 UTF-8로 설정합니다. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 반응형 웹 디자인을 위해 뷰포트 설정을 합니다. -->
     <title>IT전자과</title>
+    <!-- 웹페이지의 제목을 설정합니다. 브라우저 탭에 표시됩니다. -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS 프레임워크를 사용하기 위한 스크립트 링크입니다. -->
 </head>
 <body>
-    <main class="min-h-screen flex flex-col items-center justify-between p-4 bg-gradient-to-b from-blue-50 to-white">
+    <!-- 웹페이지의 실제 내용을 담는 본문 부분입니다. -->
+    <main class="min-h-screen flex flex-col items-center justify-between p-4 bg-gradient-to-b from-blue-50 to-white pb-20">
+        <!-- 메인 콘텐츠 영역입니다. 최소 높이를 화면 전체로 설정하고, flexbox를 사용하여 내용을 정렬합니다. -->
         <!-- 상단 IT전자과 타이틀 -->
         <div class="w-full text-center py-8">
+            <!-- 타이틀을 담는 div입니다. 너비를 꽉 채우고 텍스트를 중앙 정렬합니다. -->
             <h1 class="text-4xl font-bold text-blue-800">IT전자과</h1>
+            <!-- 학과 타이틀입니다. 글자 크기, 두께, 색상을 설정합니다. -->
         </div>
 
         <!-- 하단 네비게이션 버튼들 -->
         <div class="w-full max-w-md grid grid-cols-2 gap-4 mb-8">
+            <!-- 네비게이션 버튼들을 담는 div입니다. 최대 너비를 설정하고 grid 레이아웃을 사용하여 2열로 배치합니다. -->
             <a href="department.html" 
                 class="bg-blue-600 text-white p-6 rounded-lg text-center hover:bg-blue-700 transition-colors">
+                <!-- 학과 안내 페이지로 이동하는 링크 버튼입니다. 배경색, 글자색, 패딩, 모서리 둥글기 등을 설정합니다. -->
                 학과 안내
             </a>
             <a href="curriculum.html" 
                 class="bg-blue-600 text-white p-6 rounded-lg text-center hover:bg-blue-700 transition-colors">
+                <!-- 교육과정 안내 페이지로 이동하는 링크 버튼입니다. -->
                 교육과정 안내
             </a>
             <a href="employment.html" 
                 class="bg-blue-600 text-white p-6 rounded-lg text-center hover:bg-blue-700 transition-colors">
+                <!-- 취업 안내 페이지로 이동하는 링크 버튼입니다. -->
                 취업 안내
             </a>
             <a href="advancement.html" 
                 class="bg-blue-600 text-white p-6 rounded-lg text-center hover:bg-blue-700 transition-colors">
+                <!-- 진학 안내 페이지로 이동하는 링크 버튼입니다. -->
                 진학 안내
             </a>
         </div>
     </main>
+
 </body>
 </html> 
