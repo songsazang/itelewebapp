@@ -12,6 +12,56 @@
     <!-- 웹페이지의 제목을 설정합니다. 브라우저 탭에 표시됩니다. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Tailwind CSS 프레임워크를 사용하기 위한 스크립트 링크입니다. -->
+    <style>
+        html, body, * {
+            cursor: none !important;
+            -webkit-user-drag: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        a, button, [role="button"] {
+            cursor: none !important;
+        }
+        .touch-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 123, 255, 0.3);
+            pointer-events: none;
+            width: 80px;
+            height: 80px;
+            transform: translate(-50%, -50%);
+            animation: touch-fade 0.5s linear;
+        }
+        @keyframes touch-fade {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('mousedown', showTouchEffect);
+        document.body.addEventListener('touchstart', showTouchEffect);
+        function showTouchEffect(e) {
+            let x, y;
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX;
+                y = e.touches[0].clientY;
+            } else {
+                x = e.clientX;
+                y = e.clientY;
+            }
+            const effect = document.createElement('div');
+            effect.className = 'touch-effect';
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 500);
+        }
+        // 드래그 방지
+        document.body.addEventListener('dragstart', function(e) { e.preventDefault(); });
+    });
+    </script>
 </head>
 <body>
     <!-- 웹페이지의 실제 내용을 담는 본문 부분입니다. -->

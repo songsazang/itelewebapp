@@ -48,7 +48,55 @@
              padding: 12px;
              text-align: left;
          }
+        html, body, * {
+            cursor: none !important;
+            -webkit-user-drag: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        a, button, [role="button"] {
+            cursor: none !important;
+        }
+        .touch-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 123, 255, 0.3);
+            pointer-events: none;
+            width: 80px;
+            height: 80px;
+            transform: translate(-50%, -50%);
+            animation: touch-fade 0.5s linear;
+        }
+        @keyframes touch-fade {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('mousedown', showTouchEffect);
+        document.body.addEventListener('touchstart', showTouchEffect);
+        function showTouchEffect(e) {
+            let x, y;
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX;
+                y = e.touches[0].clientY;
+            } else {
+                x = e.clientX;
+                y = e.clientY;
+            }
+            const effect = document.createElement('div');
+            effect.className = 'touch-effect';
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 500);
+        }
+        // 드래그 방지
+        document.body.addEventListener('dragstart', function(e) { e.preventDefault(); });
+    });
+    </script>
 </head>
 <body class="bg-gradient-to-b from-blue-50 to-white min-h-screen">
     <!-- 웹페이지의 실제 내용을 담는 본문 부분입니다. -->
@@ -264,7 +312,7 @@
                          <!-- '고교학점제' 헤더 셀입니다. -->
                          <th rowspan="2" class="section-header text-center w-1/6">분류</th>
                          <!-- '분류' 헤더 셀입니다. -->
-                         <th colspan="2" class="section-header text-center w-2/3">학점 이수 과정 택1</th>
+                         <th colspan="2" class="section-header text-center w-2/3">학기당 1과목 선택</th>
                          <!-- '학점 이수 과정 택1' 헤더 셀입니다. -->
                      </tr>
                      <tr>
@@ -276,45 +324,121 @@
                  </thead>
                  <tbody>
                      <tr>
-                         <td rowspan="2" class="text-center">학점 이수 과정 택<br>1</td>
+                         <td rowspan="6" class="text-center">학점 이수 과정(택1)</td>
                          <!-- '학점 이수 과정 택 1' 내용 셀입니다. -->
-                         <td class="text-center">항공우주과정</td>
+                         <td class="text-center">항공우주</td>
                          <!-- '항공우주과정' 분류 셀입니다. -->
                          <td>
                              <!-- 항공우주과정 2학년 내용 셀입니다. -->
                               <ul class="list-disc pl-5 space-y-1">
-                                 <li>항공우주 기계부품조립 I</li>
-                                 <li>항공우주 도면해석</li>
+                                 <li>항공기 기체 정비</li>
                                  <li>항공우주 전기 기본작업</li>
+                                 <li>항공우주 도면 해석석</li>
                              </ul>
                          </td>
                           <td>
                              <!-- 항공우주과정 3학년 내용 셀입니다. -->
                              <ul class="list-disc pl-5 space-y-1">
-                                 <li>항공우주 기계부품조립 II</li>
-                                 <li>항공우주 부품설계</li>
-                                 <li>항공우주 전자 기본작업</li>
+                                 <li>항공우주 기계 부품 조립</li>
+                                 <li>항공우주 부품 설계</li>
+                                 <li>항공우주 기초 전자</li>
                              </ul>
                          </td>
                      </tr>
                      <tr>
-                         <td class="text-center">전공선택과정</td>
+                         <td class="text-center">기계 융합</td>
                          <!-- 전공선택과정 분류 셀입니다. -->
                           <td>
                              <!-- 전공선택과정 2학년 내용 셀입니다. -->
                              <ul class="list-disc pl-5 space-y-1">
-                                 <li>3D 프린터용 제품 제작</li>
-                                 <li>소형 무인기 정비</li>
+                                 <li>3D 프린터용 제품제작</li>
+                                 <li>가스 텅스텐 아크 용접</li>
                              </ul>
                          </td>
                         <td>
                              <!-- 전공선택과정 3학년 내용 셀입니다. -->
                              <ul class="list-disc pl-5 space-y-1">
-                                 <li>프로그래밍(C++)</li>
-                                 <li>프로그래밍(PYTHON)</li>
+                                 <li>자동차 튜닝</li>
+                                 <li>항공기 가스 터빈 엔진 정비</li>
                              </ul>
                          </td>
                      </tr>
+                     <tr>
+                        <td class="text-center">건설 융합</td>
+                        <!-- 전공선택과정 분류 셀입니다. -->
+                         <td>
+                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>건설 재료</li>
+                                <li>소형 무인기 운용 조종</li>
+                            </ul>
+                        </td>
+                       <td>
+                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>교통 계획 설계</li>
+                                <li>중장비 운영</li>
+                                <li>드론콘텐츠 제작</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">건축 융합</td>
+                        <!-- 전공선택과정 분류 셀입니다. -->
+                         <td>
+                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>주거 서비스</li>
+                                <li>건축 도장 시공</li>
+                                <li>AI목공코딩</li>
+                            </ul>
+                        </td>
+                       <td>
+                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>건축 3D 모델링</li>
+                                <li>건물 정보 관리 기초</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">전기 융합</td>
+                        <!-- 전공선택과정 분류 셀입니다. -->
+                         <td>
+                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>외선 공사</li>
+                                <li>전기 설비</li>
+                            </ul>
+                        </td>
+                       <td>
+                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>프로그래밍</li>
+                                <li>소방설비 Ⅰ</li>
+                                <li>전기 공사 관리</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">IT 융합</td>
+                        <!-- 전공선택과정 분류 셀입니다. -->
+                         <td>
+                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>전자제품 3D디자인</li>
+                                <li>소형 무인기 정비</li>
+                                <li>빅데이터 엑셀</li>
+                            </ul>
+                        </td>
+                       <td>
+                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>웹 프로그래밍 실무</li>
+                                <li>로봇 제작</li>
+                            </ul>
+                        </td>
+                    </tr>
                  </tbody>
              </table>
              
