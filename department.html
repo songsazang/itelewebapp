@@ -33,17 +33,208 @@
                 </p>
             </div>
 
-            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
-                <!-- 주요 교육 분야 섹션입니다. -->
-                <h2 class="text-xl font-semibold mb-4">주요 교육 분야</h2>
-                <!-- 소제목입니다. -->
-                <ul class="list-disc list-inside text-gray-700">
-                    <!-- 교육 분야 목록입니다. -->
-                    <li>전자공학 기초 및 응용</li>
-                    <li>정보통신 기술</li>
-                    <li>임베디드 시스템</li>
-                    <li>IoT 및 스마트 시스템</li>
-                </ul>
+            <!-- 교육과정 안내(기존 curriculum.html 내용 전체 삽입) -->
+            <div class="overflow-x-auto">
+                <!-- 표가 넘칠 경우 가로 스크롤을 허용합니다. -->
+                <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8">
+                    <!-- 1학년 교육과정 표입니다. -->
+                    <thead>
+                        <tr>
+                            <th colspan="3" class="section-header text-center">1학년</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" class="text-center w-1/3">항공 기초</th>
+                            <th colspan="2" class="text-center w-2/3">전공 일반(기초)</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center w-1/3">전자</th>
+                            <th class="text-center w-1/3">소프트웨어</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2" class="w-1/3">
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>항공기 일반</li>
+                                    <li>항공 우주와 스마트 기술</li>
+                                </ul>
+                            </td>
+                            <td class="w-1/3">
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>전기·전자 측정</li>
+                                    <li>전자회로</li>
+                                </ul>
+                            </td>
+                            <td class="w-1/3">
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>정보처리와 관리</li>
+                                    <li>프로그래밍</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8 mt-8">
+                    <!-- 2학년 교육과정 표입니다. -->
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="section-header text-center">2학년</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" class="text-center w-1/4">설계 분야(택1)</th>
+                            <th class="text-center w-1/4">전자회로</th>
+                            <th class="text-center w-1/4">2D, 3D 설계</th>
+                            <th class="text-center w-1/4">로봇</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>전자제품생산</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>기계요소 설계</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>로봇 하드웨어 설계</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" class="text-center w-1/4">전공 실무(택1)</th>
+                            <th class="text-center w-1/4">전자</th>
+                            <th class="text-center w-1/4">통신</th>
+                            <th class="text-center w-1/4">임베디드</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>정보통신 기기 하드웨어 개발</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>네트워크 구축</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>로봇 제작</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8 mt-8">
+                    <!-- 3학년 교육과정 표입니다. -->
+                    <thead>
+                        <tr>
+                            <th colspan="4" class="section-header text-center">3학년</th>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" class="text-center w-1/4">제작 분야(택1)</th>
+                            <th class="text-center w-1/4">전자기기</th>
+                            <th class="text-center w-1/4">항공우주</th>
+                            <th class="text-center w-1/4">로봇</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>전자 응용 기기 기구 개발</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>항공기 전기·전자 장비 제작</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>로봇 기구 개발</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th rowspan="2" class="text-center w-1/4">전공 실무(택1)</th>
+                            <th class="text-center w-1/4">전자</th>
+                            <th class="text-center w-1/4">통신</th>
+                            <th class="text-center w-1/4">임베디드</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>항공기 전기·전자 장비 정비</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>유선 통신 구축·운용</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>시스템 프로그래밍</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8 mt-8 hakjumje-table">
+                    <!-- 고교학점제 표입니다. -->
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="section-header text-center w-1/6">고교학점제</th>
+                            <th rowspan="2" class="section-header text-center w-1/6">분류</th>
+                            <th colspan="2" class="section-header text-center w-2/3">학점 이수 과정 택1</th>
+                        </tr>
+                        <tr>
+                            <th class="section-header text-center w-1/3">2학년</th>
+                            <th class="section-header text-center w-1/3">3학년</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2" class="text-center">학점 이수 과정 택<br>1</td>
+                            <td class="text-center">항공우주과정</td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>항공우주 기계부품조립 I</li>
+                                    <li>항공우주 도면해석</li>
+                                    <li>항공우주 전기 기본작업</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>항공우주 기계부품조립 II</li>
+                                    <li>항공우주 부품설계</li>
+                                    <li>항공우주 전자 기본작업</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">전공선택과정</td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>3D 프린터용 제품 제작</li>
+                                    <li>소형 무인기 정비</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    <li>프로그래밍(C++)</li>
+                                    <li>프로그래밍(PYTHON)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </main>
