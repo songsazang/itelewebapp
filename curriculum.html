@@ -72,9 +72,38 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
+        .popup {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            min-width: 220px;
+            z-index: 50;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin-left: 1rem;
+            display: none;
+        }
+        .popup.active {
+            display: block;
+        }
+        .subject-btn {
+            min-width: 140px;
+            margin: 0.5rem;
+        }
+        .area-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2563eb;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // 터치 이펙트
         document.body.addEventListener('mousedown', showTouchEffect);
         document.body.addEventListener('touchstart', showTouchEffect);
         function showTouchEffect(e) {
@@ -93,14 +122,34 @@
             document.body.appendChild(effect);
             setTimeout(() => effect.remove(), 500);
         }
-        // 드래그 방지
         document.body.addEventListener('dragstart', function(e) { e.preventDefault(); });
+
+        // 팝업 로직
+        let activePopup = null;
+        document.querySelectorAll('.subject-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // 모든 팝업 닫기
+                document.querySelectorAll('.popup').forEach(p => p.classList.remove('active'));
+                // 해당 팝업 열기
+                const popup = this.nextElementSibling;
+                if (popup) {
+                    popup.classList.add('active');
+                    activePopup = popup;
+                }
+            });
+        });
+        // 빈 공간 클릭 시 팝업 닫기
+        document.body.addEventListener('click', function() {
+            document.querySelectorAll('.popup').forEach(p => p.classList.remove('active'));
+            activePopup = null;
+        });
     });
     </script>
 </head>
 <body class="bg-gradient-to-b from-blue-50 to-white min-h-screen">
     <!-- 웹페이지의 실제 내용을 담는 본문 부분입니다. -->
-    <main class="p-4 max-w-6xl mx-auto pb-20">
+    <main class="p-4 max-w-4xl mx-auto pb-20">
         <!-- 메인 콘텐츠 영역입니다. 좌우 자동 마진으로 중앙에 배치하고 최대 너비를 설정합니다. 하단에 여백을 추가합니다. -->
         <!-- 상단 헤더 -->
         <div class="w-full text-center py-8">
@@ -109,351 +158,184 @@
             <!-- 페이지 제목입니다. -->
         </div>
 
-        <!-- 교육과정 표 -->
-        <div class="overflow-x-auto">
-            <!-- 표가 넘칠 경우 가로 스크롤을 허용합니다. -->
-            <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8">
-                <!-- 1학년 교육과정 표입니다. -->
-                <thead>
-                    <tr>
-                        <th colspan="3" class="section-header text-center">1학년</th>
-                        <!-- 1학년 헤더 셀입니다. 3개의 열을 병합하고 중앙 정렬합니다. -->
-                    </tr>
-                    <tr>
-                        <th rowspan="2" class="text-center w-1/3">항공 기초</th>
-                        <!-- '항공 기초' 헤더 셀입니다. 2개의 행을 병합하고 너비를 설정합니다. -->
-                        <th colspan="2" class="text-center w-2/3">전공 일반(기초)</th>
-                        <!-- '전공 일반(기초)' 헤더 셀입니다. 2개의 열을 병합하고 너비를 설정합니다. -->
-                    </tr>
-                    <tr>
-                        <th class="text-center w-1/3">전자</th>
-                        <!-- '전자' 헤더 셀입니다. 너비를 설정합니다. -->
-                        <th class="text-center w-1/3">소프트웨어</th>
-                        <!-- '소프트웨어' 헤더 셀입니다. 너비를 설정합니다. -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="2" class="w-1/3">
-                            <!-- '항공 기초' 내용 셀입니다. 2개의 행을 병합하고 너비를 설정합니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <!-- 목록 스타일입니다. -->
-                                <li>항공기 일반</li>
-                                <li>항공 우주와 스마트 기술</li>
-                            </ul>
-                        </td>
-                        <td class="w-1/3">
-                            <!-- '전공 일반(기초) - 전자' 내용 셀입니다. 너비를 설정합니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>전기·전자 측정</li>
-                                <li>전자회로</li>
-                            </ul>
-                        </td>
-                        <td class="w-1/3">
-                            <!-- '전공 일반(기초) - 소프트웨어' 내용 셀입니다. 너비를 설정합니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>정보처리와 관리</li>
-                                <li>프로그래밍</li>
-                            </ul>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8 mt-8">
-                <!-- 2학년 교육과정 표입니다. -->
-                 <thead>
-                     <tr>
-                         <th colspan="4" class="section-header text-center">2학년</th>
-                         <!-- 2학년 헤더 셀입니다. 4개의 열을 병합하고 중앙 정렬합니다. -->
-                     </tr>
-                     <tr>
-                         <th rowspan="2" class="text-center w-1/4">설계 분야(택1)</th>
-                         <!-- '설계 분야(택1)' 헤더 셀입니다. 2개의 행을 병합하고 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">전자회로</th>
-                         <!-- '전자회로' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">2D, 3D 설계</th>
-                         <!-- '2D, 3D 설계' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">로봇</th>
-                         <!-- '로봇' 헤더 셀입니다. 너비를 설정합니다. -->
-                     </tr>
-                      <tr>
-                         <td>
-                             <!-- '전자회로' 내용 셀입니다. -->
-                              <ul class="list-disc pl-5 space-y-1">
-                                 <li>전자제품생산</li>
-                            </ul>
-                        </td>
-                        <td>
-                            <!-- '2D, 3D 설계' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>기계요소 설계</li>
-                            </ul>
-                        </td>
-                        <td>
-                            <!-- '로봇' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>로봇 하드웨어 설계</li>
-                            </ul>
-                        </td>
-                     </tr>
-                     <tr>
-                         <th rowspan="2" class="text-center w-1/4">전공 실무(택1)</th>
-                         <!-- '전공 실무(택1)' 헤더 셀입니다. 2개의 행을 병합하고 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">전자</th>
-                         <!-- '전자' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">통신</th>
-                         <!-- '통신' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">임베디드</th>
-                         <!-- '임베디드' 헤더 셀입니다. 너비를 설정합니다. -->
-                     </tr>
-                      <tr>
-                         <td>
-                             <!-- '전자' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>정보통신 기기 하드웨어 개발</li>
-                            </ul>
-                        </td>
-                        <td>
-                            <!-- '통신' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>네트워크 구축</li>
-                            </ul>
-                        </td>
-                        <td>
-                            <!-- '임베디드' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>로봇 제작</li>
-                             </ul>
-                         </td>
-                     </tr>
-                 </thead>
-                 <tbody>
-                 </tbody>
-             </table>
-             
-             <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8 mt-8">
-                 <!-- 3학년 교육과정 표입니다. -->
-                 <thead>
-                     <tr>
-                         <th colspan="4" class="section-header text-center">3학년</th>
-                         <!-- 3학년 헤더 셀입니다. 4개의 열을 병합하고 중앙 정렬합니다. -->
-                     </tr>
-                     <tr>
-                         <th rowspan="2" class="text-center w-1/4">제작 분야(택1)</th>
-                         <!-- '제작 분야(택1)' 헤더 셀입니다. 2개의 행을 병합하고 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">전자기기</th>
-                         <!-- '전자기기' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">항공우주</th>
-                         <!-- '항공우주' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">로봇</th>
-                         <!-- '로봇' 헤더 셀입니다. 너비를 설정합니다. -->
-                     </tr>
-                      <tr>
-                         <td>
-                             <!-- '전자기기' 내용 셀입니다. -->
-                              <ul class="list-disc pl-5 space-y-1">
-                                 <li>전자 응용 기기 기구 개발</li>
-                            </ul>
-                        </td>
-                        <td>
-                             <!-- '항공우주' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>항공기 전기·전자 장비 제작</li>
-                            </ul>
-                        </td>
-                        <td>
-                             <!-- '로봇' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>로봇 기구 개발</li>
-                            </ul>
-                        </td>
-                     </tr>
-                      <tr>
-                         <th rowspan="2" class="text-center w-1/4">전공 실무(택1)</th>
-                         <!-- '전공 실무(택1)' 헤더 셀입니다. 2개의 행을 병합하고 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">전자</th>
-                         <!-- '전자' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">통신</th>
-                         <!-- '통신' 헤더 셀입니다. 너비를 설정합니다. -->
-                         <th class="text-center w-1/4">임베디드</th>
-                         <!-- '임베디드' 헤더 셀입니다. 너비를 설정합니다. -->
-                     </tr>
-                      <tr>
-                         <td>
-                             <!-- '전자' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>항공기 전기·전자 장비 정비</li>
-                            </ul>
-                        </td>
-                        <td>
-                             <!-- '통신' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>유선 통신 구축·운용</li>
-                            </ul>
-                        </td>
-                        <td>
-                             <!-- '임베디드' 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>시스템 프로그래밍</li>
-                             </ul>
-                         </td>
-                     </tr>
-                 </thead>
-                 <tbody>
-                 </tbody>
-             </table>
-             
-             <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden mb-8 mt-8 hakjumje-table">
-                 <!-- 고교학점제 표입니다. -->
-                 <thead>
-                     <tr>
-                         <th rowspan="2" class="section-header text-center w-1/6">고교학점제</th>
-                         <!-- '고교학점제' 헤더 셀입니다. -->
-                         <th rowspan="2" class="section-header text-center w-1/6">분류</th>
-                         <!-- '분류' 헤더 셀입니다. -->
-                         <th colspan="2" class="section-header text-center w-2/3">학기당 1과목 선택</th>
-                         <!-- '학점 이수 과정 택1' 헤더 셀입니다. -->
-                     </tr>
-                     <tr>
-                         <th class="section-header text-center w-1/3">2학년</th>
-                         <!-- '2학년' 헤더 셀입니다. -->
-                         <th class="section-header text-center w-1/3">3학년</th>
-                         <!-- '3학년' 헤더 셀입니다. -->
-                     </tr>
-                 </thead>
-                 <tbody>
-                     <tr>
-                         <td rowspan="6" class="text-center">학점 이수 과정(택1)</td>
-                         <!-- '학점 이수 과정 택 1' 내용 셀입니다. -->
-                         <td class="text-center">항공우주</td>
-                         <!-- '항공우주과정' 분류 셀입니다. -->
-                         <td>
-                             <!-- 항공우주과정 2학년 내용 셀입니다. -->
-                              <ul class="list-disc pl-5 space-y-1">
-                                 <li>항공기 기체 정비</li>
-                                 <li>항공우주 전기 기본작업</li>
-                                 <li>항공우주 도면 해석석</li>
-                             </ul>
-                         </td>
-                          <td>
-                             <!-- 항공우주과정 3학년 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>항공우주 기계 부품 조립</li>
-                                 <li>항공우주 부품 설계</li>
-                                 <li>항공우주 기초 전자</li>
-                             </ul>
-                         </td>
-                     </tr>
-                     <tr>
-                         <td class="text-center">기계 융합</td>
-                         <!-- 전공선택과정 분류 셀입니다. -->
-                          <td>
-                             <!-- 전공선택과정 2학년 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>3D 프린터용 제품제작</li>
-                                 <li>가스 텅스텐 아크 용접</li>
-                             </ul>
-                         </td>
-                        <td>
-                             <!-- 전공선택과정 3학년 내용 셀입니다. -->
-                             <ul class="list-disc pl-5 space-y-1">
-                                 <li>자동차 튜닝</li>
-                                 <li>항공기 가스 터빈 엔진 정비</li>
-                             </ul>
-                         </td>
-                     </tr>
-                     <tr>
-                        <td class="text-center">건설 융합</td>
-                        <!-- 전공선택과정 분류 셀입니다. -->
-                         <td>
-                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>건설 재료</li>
-                                <li>소형 무인기 운용 조종</li>
-                            </ul>
-                        </td>
-                       <td>
-                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>교통 계획 설계</li>
-                                <li>중장비 운영</li>
-                                <li>드론콘텐츠 제작</li>
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center">건축 융합</td>
-                        <!-- 전공선택과정 분류 셀입니다. -->
-                         <td>
-                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>주거 서비스</li>
-                                <li>건축 도장 시공</li>
-                                <li>AI목공코딩</li>
-                            </ul>
-                        </td>
-                       <td>
-                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>건축 3D 모델링</li>
-                                <li>건물 정보 관리 기초</li>
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center">전기 융합</td>
-                        <!-- 전공선택과정 분류 셀입니다. -->
-                         <td>
-                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>외선 공사</li>
-                                <li>전기 설비</li>
-                            </ul>
-                        </td>
-                       <td>
-                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>프로그래밍</li>
-                                <li>소방설비 Ⅰ</li>
-                                <li>전기 공사 관리</li>
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="text-center">IT 융합</td>
-                        <!-- 전공선택과정 분류 셀입니다. -->
-                         <td>
-                            <!-- 전공선택과정 2학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>전자제품 3D디자인</li>
-                                <li>소형 무인기 정비</li>
-                                <li>빅데이터 엑셀</li>
-                            </ul>
-                        </td>
-                       <td>
-                            <!-- 전공선택과정 3학년 내용 셀입니다. -->
-                            <ul class="list-disc pl-5 space-y-1">
-                                <li>웹 프로그래밍 실무</li>
-                                <li>로봇 제작</li>
-                            </ul>
-                        </td>
-                    </tr>
-                 </tbody>
-             </table>
-             
-             <!-- 여기에 2학년, 3학년, 고교학점제 표가 추가될 수 있습니다. -->
-         </div>
- 
-         <!-- 홈으로 돌아가기 버튼 -->
-         <div class="fixed bottom-0 left-0 right-0 text-center p-4 bg-white shadow-lg">
-             <!-- 화면 하단에 고정된 div입니다. -->
-             <a href="index.html"
-                class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                 <!-- 홈으로 이동하는 링크 버튼입니다. -->
-                 메인으로 돌아가기
-             </a>
-         </div>
-     </main>
- </body>
- </html> 
+        <!-- 1학년 -->
+        <div class="mb-8">
+            <div class="area-title">1학년</div>
+            <div class="flex flex-wrap gap-2">
+                <div class="relative">
+                    <button class="subject-btn bg-blue-100 hover:bg-blue-200 rounded px-4 py-2">항공기일반</button>
+                    <div class="popup"><!-- 항공기일반 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-blue-100 hover:bg-blue-200 rounded px-4 py-2">전기전자측정</button>
+                    <div class="popup"><!-- 전기전자측정 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-blue-100 hover:bg-blue-200 rounded px-4 py-2">정보처리와 관리</button>
+                    <div class="popup"><!-- 정보처리와 관리 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-blue-100 hover:bg-blue-200 rounded px-4 py-2">항공우주와 스마트기술</button>
+                    <div class="popup"><!-- 항공우주와 스마트기술 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-blue-100 hover:bg-blue-200 rounded px-4 py-2">전자회로</button>
+                    <div class="popup"><!-- 전자회로 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-blue-100 hover:bg-blue-200 rounded px-4 py-2">프로그래밍</button>
+                    <div class="popup"><!-- 프로그래밍 설명 작성 --></div>
+                </div>
+            </div>
+        </div>
+        <!-- 2학년 -->
+        <div class="mb-8">
+            <div class="area-title">2학년</div>
+            <!-- 전공코스(2년과정) 전체 영역 -->
+            <div class="border-2 border-blue-400 rounded-xl p-4 mb-6 bg-blue-50">
+                <div class="text-lg font-bold text-blue-800 mb-2">전공코스(2년 과정 중 1년 운영)</div>
+                <div class="area-title text-base text-blue-700">항공우주코스</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-green-100 hover:bg-green-200 rounded px-4 py-2">인공위성 전자회로 계측</button>
+                        <div class="popup"><!-- 인공위성 전자회로 계측 설명 작성 --></div>
+                    </div>
+                </div>
+                <div class="area-title text-base text-blue-700">IT코스</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-green-100 hover:bg-green-200 rounded px-4 py-2">정보시스템 실무</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                </div>
+                <div class="area-title text-base text-blue-700">통신·전자 코스</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-green-100 hover:bg-green-200 rounded px-4 py-2">유선 통신 구축·운용 </button>
+                        <div class="popup"><!-- 유선 통신 구축·운용 설명 작성 --></div>
+                    </div>
+                </div>
+            </div>
+            <div class="area-title text-base text-blue-700">융합코스(학기별 1개씩 총 2개 선택)</div>
+            <div class="flex flex-wrap gap-2 mb-2">
+                <div class="relative">
+                    <button class="subject-btn bg-yellow-100 hover:bg-yellow-200 rounded px-4 py-2">임베디드 기초</button>
+                    <div class="popup"><!-- 임베디드 기초 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-yellow-100 hover:bg-yellow-200 rounded px-4 py-2">기계 제어 설계</button>
+                    <div class="popup"><!-- 기계 제어 설계 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-yellow-100 hover:bg-yellow-200 rounded px-4 py-2">전자문서 작성 실무</button>
+                    <div class="popup"><!-- 전자문서 작성 실무 설명 작성 --></div>
+                </div>
+            </div>
+            <div class="border-2 border-blue-400 rounded-xl p-4 mb-6 bg-blue-50">
+                <div class="text-lg font-bold text-blue-800 mb-2">학점제(학기별 1개씩 총 2개 선택)</div>
+                <div class="area-title text-base text-blue-700">항공우주 전자</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">전자제품 3D디자인</button>
+                        <div class="popup"><!-- 전자제품 3D디자인 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">소형 무인기 정비</button>
+                        <div class="popup"><!-- 소형 무인기 정비 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">빅데이터 엑셀</button>
+                        <div class="popup"><!-- 빅데이터 엑셀 설명 작성 --></div>
+                    </div>
+                </div>
+                <div class="area-title text-base text-blue-700">항공 우주 기계</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">3</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                </div>
+                <div class="area-title text-base text-blue-700">항공 우주 건설</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">3</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                </div>
+                <div class="area-title text-base text-blue-700">항공 우주 건축</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">3</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                </div>
+                <div class="area-title text-base text-blue-700">항공 우주 전기</div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">2</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                    <div class="relative">
+                        <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">3</button>
+                        <div class="popup"><!-- 정보시스템 실무 설명 작성 --></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="area-title text-base text-blue-700">고교학점제(항공우주 전자)</div>
+            <div class="flex flex-wrap gap-2 mb-2">
+                <div class="relative">
+                    <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">전자제품 3D디자인</button>
+                    <div class="popup"><!-- 전자제품 3D디자인 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">소형 무인기 정비</button>
+                    <div class="popup"><!-- 소형 무인기 정비 설명 작성 --></div>
+                </div>
+                <div class="relative">
+                    <button class="subject-btn bg-purple-100 hover:bg-purple-200 rounded px-4 py-2">빅데이터 엑셀</button>
+                    <div class="popup"><!-- 빅데이터 엑셀 설명 작성 --></div>
+                </div>
+            </div>
+        </div>
+        <!-- 3학년 -->
+        <div class="mb-8">
+            <div class="area-title">3학년</div>
+            <!-- 3학년 교과목은 추후 추가 예정 -->
+        </div>
+        <div class="fixed bottom-0 left-0 right-0 text-center p-4 bg-white shadow-lg">
+            <a href="index.html" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                메인으로 돌아가기
+            </a>
+        </div>
+    </main>
+</body>
+</html> 
