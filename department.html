@@ -49,17 +49,16 @@
              text-align: left;
          }
         html, body, * {
-            cursor: none !important;
             -webkit-user-drag: none;
             user-select: none;
             -webkit-user-select: none;
             -ms-user-select: none;
         }
         a, button, [role="button"] {
-            cursor: none !important;
+            cursor: pointer !important;
         }
         .touch-effect {
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
             background: rgba(0, 123, 255, 0.3);
             pointer-events: none;
@@ -75,8 +74,50 @@
     </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        document.body.addEventListener('mousedown', showTouchEffect);
-        document.body.addEventListener('touchstart', showTouchEffect);
+        // 터치 이펙트
+        let isDragging = false;
+        let startY;
+        let scrollTop;
+        let dragStartTime;
+
+        document.body.addEventListener('mousedown', function(e) {
+            dragStartTime = Date.now();
+            startY = e.pageY - window.scrollY;
+            scrollTop = window.scrollY;
+            isDragging = false; // 초기 상태는 드래그가 아님
+        });
+
+        document.body.addEventListener('mousemove', function(e) {
+            if (startY === undefined) return;
+            
+            const y = e.pageY - window.scrollY;
+            const walk = Math.abs(y - startY);
+            
+            // 일정 거리 이상 움직였거나, 일정 시간이 지났으면 드래그로 판단
+            if (walk > 5 || Date.now() - dragStartTime > 200) {
+                isDragging = true;
+                e.preventDefault();
+                const walk = (y - startY) * 2;
+                window.scrollTo(0, scrollTop - walk);
+            }
+        });
+
+        document.body.addEventListener('mouseup', function(e) {
+            if (!isDragging && startY !== undefined) {
+                // 드래그가 아닌 경우에만 터치 이펙트 표시
+                showTouchEffect(e);
+            }
+            isDragging = false;
+            startY = undefined;
+            scrollTop = undefined;
+        });
+
+        document.body.addEventListener('mouseleave', function() {
+            isDragging = false;
+            startY = undefined;
+            scrollTop = undefined;
+        });
+
         function showTouchEffect(e) {
             let x, y;
             if (e.touches && e.touches.length > 0) {
@@ -90,10 +131,11 @@
             effect.className = 'touch-effect';
             effect.style.left = x + 'px';
             effect.style.top = y + 'px';
+            effect.style.position = 'fixed';
             document.body.appendChild(effect);
             setTimeout(() => effect.remove(), 500);
         }
-        // 드래그 방지
+
         document.body.addEventListener('dragstart', function(e) { e.preventDefault(); });
     });
     </script>
