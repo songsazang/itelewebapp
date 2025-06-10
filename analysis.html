@@ -92,6 +92,7 @@
         const encodedData = params.get('data');
         const analysisResultContainer = document.getElementById('analysis-result');
         let csvData = null;
+        let selectedSubjects = null;
 
         // CSV 파일 로드
         fetch('select_data.csv')
@@ -108,79 +109,77 @@
                     return { subject, certificate, job, department };
                 });
                 
-                // CSV 데이터가 로드된 후에 연관 정보 표시
+                // URL에서 선택된 교과 데이터 파싱
                 if (encodedData) {
-                    displayRelatedInfo(selectedSubjects, csvData);
+                    try {
+                        selectedSubjects = JSON.parse(decodeURIComponent(encodedData));
+                        
+                        // 코스명 추출 및 표시
+                        const courseNames = new Set();
+                        Object.values(selectedSubjects).forEach(subjects => {
+                            subjects.forEach(subjectInfo => {
+                                if (subjectInfo.course) {
+                                    courseNames.add(subjectInfo.course);
+                                }
+                            });
+                        });
+                        if (courseNames.size > 0) {
+                            const courseTitle = document.createElement('div');
+                            courseTitle.className = 'text-center text-2xl font-semibold text-blue-700 mb-8';
+                            courseTitle.textContent = `선택한 전공 코스: ${Array.from(courseNames).join(', ')}`;
+                            analysisResultContainer.parentNode.insertBefore(courseTitle, analysisResultContainer);
+                        }
+
+                        // 선택된 교과 표시
+                        Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
+                            if (subjects.length > 0) {
+                                const gradeSection = document.createElement('div');
+                                
+                                const gradeTitle = document.createElement('h2');
+                                gradeTitle.className = 'text-2xl font-bold text-gray-700 mb-4';
+                                gradeTitle.textContent = grade;
+                                gradeSection.appendChild(gradeTitle);
+
+                                const grid = document.createElement('div');
+                                grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+                                
+                                subjects.forEach(subjectInfo => {
+                                    const subjectDiv = document.createElement('div');
+                                    subjectDiv.className = 'subject-card p-4 rounded-lg shadow';
+                                    
+                                    let typeText = '';
+                                    if (subjectInfo.courseType) {
+                                        typeText = subjectInfo.courseType.replace(/학년 /g, '');
+                                    } else if (subjectInfo.course) {
+                                        typeText = '전공코스';
+                                    }
+
+                                    subjectDiv.innerHTML = `
+                                        <p class="font-semibold text-lg text-blue-800">${subjectInfo.subject}</p>
+                                        <p class="text-sm text-gray-600">${typeText}</p>
+                                    `;
+                                    grid.appendChild(subjectDiv);
+                                });
+
+                                gradeSection.appendChild(grid);
+                                analysisResultContainer.appendChild(gradeSection);
+                            }
+                        });
+
+                        // 연관 정보 표시
+                        displayRelatedInfo(selectedSubjects, csvData);
+                    } catch (error) {
+                        analysisResultContainer.innerHTML = '<p class="text-center text-red-500">교육과정 정보를 불러오는 데 실패했습니다.</p>';
+                        console.error('Error parsing subject data:', error);
+                    }
+                } else {
+                    analysisResultContainer.innerHTML = '<p class="text-center text-gray-500">선택된 교육과정 정보가 없습니다. 교육과정을 먼저 만들어주세요.</p>';
                 }
             })
             .catch(error => {
                 console.error('CSV 파일 로드 실패:', error);
                 document.getElementById('related-info').innerHTML = '<p class="text-center text-red-500">연관 정보를 불러오는 데 실패했습니다.</p>';
             });
-
-        if (encodedData) {
-            try {
-                const decodedData = decodeURIComponent(encodedData);
-                const selectedSubjects = JSON.parse(decodedData);
-                
-                // 코스명 추출 및 표시
-                const courseNames = new Set();
-                Object.values(selectedSubjects).forEach(subjects => {
-                    subjects.forEach(subjectInfo => {
-                        if (subjectInfo.course) {
-                            courseNames.add(subjectInfo.course);
-                        }
-                    });
-                });
-                if (courseNames.size > 0) {
-                    const courseTitle = document.createElement('div');
-                    courseTitle.className = 'text-center text-2xl font-semibold text-blue-700 mb-8';
-                    courseTitle.textContent = `선택한 전공 코스: ${Array.from(courseNames).join(', ')}`;
-                    analysisResultContainer.parentNode.insertBefore(courseTitle, analysisResultContainer);
-                }
-
-                Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
-                    if (subjects.length > 0) {
-                        const gradeSection = document.createElement('div');
-                        
-                        const gradeTitle = document.createElement('h2');
-                        gradeTitle.className = 'text-2xl font-bold text-gray-700 mb-4';
-                        gradeTitle.textContent = grade;
-                        gradeSection.appendChild(gradeTitle);
-
-                        const grid = document.createElement('div');
-                        grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
-                        
-                        subjects.forEach(subjectInfo => {
-                            const subjectDiv = document.createElement('div');
-                            subjectDiv.className = 'subject-card p-4 rounded-lg shadow';
-                            
-                            let typeText = '';
-                            if (subjectInfo.courseType) {
-                                typeText = subjectInfo.courseType.replace(/학년 /g, '');
-                            } else if (subjectInfo.course) {
-                                typeText = '전공코스';
-                            }
-
-                            subjectDiv.innerHTML = `
-                                <p class="font-semibold text-lg text-blue-800">${subjectInfo.subject}</p>
-                                <p class="text-sm text-gray-600">${typeText}</p>
-                            `;
-                            grid.appendChild(subjectDiv);
-                        });
-
-                        gradeSection.appendChild(grid);
-                        analysisResultContainer.appendChild(gradeSection);
-                    }
-                });
-
-            } catch (error) {
-                analysisResultContainer.innerHTML = '<p class="text-center text-red-500">교육과정 정보를 불러오는 데 실패했습니다.</p>';
-                console.error('Error parsing subject data:', error);
-            }
-        } else {
-            analysisResultContainer.innerHTML = '<p class="text-center text-gray-500">선택된 교육과정 정보가 없습니다. 교육과정을 먼저 만들어주세요.</p>';
-        }
 
         // 연관 정보 표시 함수
         function displayRelatedInfo(selectedSubjects, csvData) {
