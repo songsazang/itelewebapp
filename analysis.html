@@ -10,28 +10,63 @@
             background-color: #eff6ff;
             border-left: 5px solid #3b82f6;
         }
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            overflow: hidden;
+        }
+        .scrollable {
+            overflow-y: auto;
+            height: 100vh;
+            scroll-behavior: smooth;
+        }
+        .click-effect {
+            position: fixed;
+            pointer-events: none;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            transform: translate(-50%, -50%);
+            animation: clickAnimation 0.3s ease-out forwards;
+            z-index: 9999;
+        }
+        @keyframes clickAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
-    <main class="p-4 sm:p-8 max-w-4xl mx-auto">
-        <div class="text-center py-8">
-            <h1 class="text-4xl font-bold text-gray-800">나만의 교육과정 분석</h1>
-            <p class="text-lg text-gray-600 mt-2">선택하신 10개의 교과목입니다.</p>
-        </div>
+    <div class="scrollable">
+        <main class="p-4 sm:p-8 max-w-4xl mx-auto min-h-screen">
+            <div class="text-center py-8">
+                <h1 class="text-4xl font-bold text-gray-800">나만의 교육과정 분석</h1>
+                <p class="text-lg text-gray-600 mt-2">선택하신 10개의 교과목입니다.</p>
+            </div>
 
-        <div id="analysis-result" class="mt-8 space-y-8">
-            <!-- 결과가 여기에 동적으로 추가됩니다 -->
-        </div>
+            <div id="analysis-result" class="mt-8 space-y-8">
+                <!-- 결과가 여기에 동적으로 추가됩니다 -->
+            </div>
 
-        <div class="mt-12 flex flex-col sm:flex-row justify-center gap-4">
-            <a href="my-curriculum.html" class="w-full sm:w-auto inline-block bg-blue-600 text-white text-center px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                다시 만들기
-            </a>
-            <a href="index.html" class="w-full sm:w-auto inline-block bg-gray-600 text-white text-center px-8 py-3 rounded-lg hover:bg-gray-700 transition-colors">
-                메인으로 돌아가기
-            </a>
-        </div>
-    </main>
+            <div class="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+                <a href="my-curriculum.html" class="w-full sm:w-auto inline-block bg-blue-600 text-white text-center px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    다시 만들기
+                </a>
+                <a href="index.html" class="w-full sm:w-auto inline-block bg-gray-600 text-white text-center px-8 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                    메인으로 돌아가기
+                </a>
+            </div>
+        </main>
+    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -102,6 +137,47 @@
         } else {
             analysisResultContainer.innerHTML = '<p class="text-center text-gray-500">선택된 교육과정 정보가 없습니다. 교육과정을 먼저 만들어주세요.</p>';
         }
+
+        // 클릭 효과 추가
+        document.addEventListener('click', function(e) {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.style.left = e.pageX + 'px';
+            effect.style.top = e.pageY + 'px';
+            document.body.appendChild(effect);
+
+            // 애니메이션 종료 후 요소 제거
+            effect.addEventListener('animationend', function() {
+                effect.remove();
+            });
+        });
+
+        // 스크롤 관련 기능 추가
+        let isScrolling = false;
+        let startY;
+        let scrollTop;
+
+        document.querySelector('.scrollable').addEventListener('mousedown', function(e) {
+            isScrolling = true;
+            startY = e.pageY - this.offsetTop;
+            scrollTop = this.scrollTop;
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isScrolling) return;
+            e.preventDefault();
+            const y = e.pageY - document.querySelector('.scrollable').offsetTop;
+            const walk = (y - startY) * 2;
+            document.querySelector('.scrollable').scrollTop = scrollTop - walk;
+        });
+
+        document.addEventListener('mouseup', function() {
+            isScrolling = false;
+        });
+
+        document.addEventListener('mouseleave', function() {
+            isScrolling = false;
+        });
     });
     </script>
 </body>

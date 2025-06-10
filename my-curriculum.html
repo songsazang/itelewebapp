@@ -137,15 +137,18 @@
         }
         .selected-subjects-container {
             position: fixed;
-            right: 2rem;
+            right: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            width: 300px;
+            width: 250px;
+            max-height: 80vh;
+            overflow-y: auto;
             background: white;
             border: 2px solid #bfdbfe;
             border-radius: 1rem;
-            padding: 1rem;
+            padding: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
         }
         .selected-subject-item {
             background: #eff6ff;
@@ -160,6 +163,18 @@
             color: #ef4444;
             cursor: pointer;
             padding: 0.25rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+        .remove-subject:hover {
+            background-color: rgba(239, 68, 68, 0.1);
         }
     </style>
     <script>
