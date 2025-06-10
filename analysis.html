@@ -95,7 +95,7 @@
         let selectedSubjects = null;
 
         // CSV 파일 로드
-        fetch('select_data.csv')
+        fetch('select_data_flat.csv')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('CSV 파일을 불러올 수 없습니다.');
@@ -103,7 +103,7 @@
                 return response.text();
             })
             .then(data => {
-                const rows = data.split('\n').slice(1, 245); // 헤더 제외하고 244행까지만 사용
+                const rows = data.split('\n').slice(1); // 헤더 제외
                 csvData = rows.map(row => {
                     const [subject, certificate, job, department] = row.split(',').map(item => item.trim());
                     return { subject, certificate, job, department };
