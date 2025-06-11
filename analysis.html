@@ -100,11 +100,27 @@
                 console.log('CSV 파일 로드 성공');
                 console.log('select_final.csv 내용:', data);
 
-                const rows = data.split('\n').slice(1);
+                const rows = data.split('\n').filter(row => row.trim() !== '');
+                console.log('분리된 행:', rows);
+
                 finalCsvData = rows.map(row => {
-                    const [course, subjects, certificate, job, department] = row.split(',').map(item => item.trim());
-                    return { course, subjects: subjects.split('|'), certificate, job, department };
-                });
+                    const columns = row.split(',').map(item => item.trim());
+                    console.log('현재 처리 중인 행:', columns);
+                    
+                    if (columns.length >= 5) {
+                        return {
+                            course: columns[0],
+                            subjects: columns[1].split('|').map(s => s.trim()),
+                            certificate: columns[2],
+                            job: columns[3],
+                            department: columns[4]
+                        };
+                    } else {
+                        console.warn('잘못된 형식의 행 발견:', row);
+                        return null;
+                    }
+                }).filter(item => item !== null);
+
                 console.log('파싱된 finalCsvData:', finalCsvData);
             })
             .catch(error => {
