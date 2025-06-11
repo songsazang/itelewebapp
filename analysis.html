@@ -91,28 +91,26 @@
         const params = new URLSearchParams(window.location.search);
         const encodedData = params.get('data');
         const analysisResultContainer = document.getElementById('analysis-result');
-        let csvData = null;
         let finalCsvData = null;
 
-        // CSV 파일들 로드
-        Promise.all([
-            fetch('select data.csv').then(response => response.text()),
-            fetch('select_final.csv').then(response => response.text())
-        ])
-        .then(([data1, data2]) => {
-            const rows1 = data1.split('\n').slice(1, 245);
-            csvData = rows1.map(row => {
-                const [subject, certificate, job, department] = row.split(',').map(item => item.trim());
-                return { subject, certificate, job, department };
-            });
+        // CSV 파일 로드
+        fetch('select_final.csv')
+            .then(response => response.text())
+            .then(data => {
+                console.log('CSV 파일 로드 성공');
+                console.log('select_final.csv 내용:', data);
 
-            const rows2 = data2.split('\n').slice(1);
-            finalCsvData = rows2.map(row => {
-                const [course, subjects, certificate, job, department] = row.split(',').map(item => item.trim());
-                return { course, subjects: subjects.split('|'), certificate, job, department };
+                const rows = data.split('\n').slice(1);
+                finalCsvData = rows.map(row => {
+                    const [course, subjects, certificate, job, department] = row.split(',').map(item => item.trim());
+                    return { course, subjects: subjects.split('|'), certificate, job, department };
+                });
+                console.log('파싱된 finalCsvData:', finalCsvData);
+            })
+            .catch(error => {
+                console.error('CSV 파일 로드 실패:', error);
+                console.error('에러 상세:', error.message);
             });
-        })
-        .catch(error => console.error('CSV 파일 로드 실패:', error));
 
         if (encodedData) {
             try {
@@ -175,20 +173,6 @@
                 const jobs = new Set();
                 const departments = new Set();
 
-                // 기존 연관 정보 수집
-                Object.values(selectedSubjects).forEach(subjects => {
-                    subjects.forEach(subjectInfo => {
-                        if (csvData) {
-                            const relatedInfo = csvData.find(row => row.subject === subjectInfo.subject);
-                            if (relatedInfo) {
-                                if (relatedInfo.certificate) certificates.add(relatedInfo.certificate);
-                                if (relatedInfo.job) jobs.add(relatedInfo.job);
-                                if (relatedInfo.department) departments.add(relatedInfo.department);
-                            }
-                        }
-                    });
-                });
-
                 // select_final.csv에서 일치하는 행 찾기
                 if (finalCsvData) {
                     const selectedSubjectsList = [];
@@ -197,12 +181,19 @@
                             selectedSubjectsList.push(subjectInfo.subject);
                         });
                     });
+                    console.log('선택된 교과목 목록:', selectedSubjectsList);
+                    console.log('선택된 코스:', Array.from(courseNames));
 
                     const matchingRow = finalCsvData.find(row => {
                         const courseMatch = Array.from(courseNames).includes(row.course);
                         const subjectsMatch = row.subjects.every(subject => selectedSubjectsList.includes(subject));
+                        console.log('비교 중인 행:', row);
+                        console.log('코스 매치:', courseMatch);
+                        console.log('교과목 매치:', subjectsMatch);
                         return courseMatch && subjectsMatch;
                     });
+
+                    console.log('일치하는 행:', matchingRow);
 
                     if (matchingRow) {
                         if (matchingRow.certificate) certificates.add(matchingRow.certificate);
@@ -210,6 +201,10 @@
                         if (matchingRow.department) departments.add(matchingRow.department);
                     }
                 }
+
+                console.log('최종 자격증:', Array.from(certificates));
+                console.log('최종 직업:', Array.from(jobs));
+                console.log('최종 학과:', Array.from(departments));
 
                 // 연관 정보를 HTML에 추가
                 const certificatesContainer = document.getElementById('certificates');
