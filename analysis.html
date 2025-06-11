@@ -217,23 +217,37 @@
                         });
                     });
                     console.log('선택된 교과목 목록:', selectedSubjectsList);
-                    console.log('선택된 코스:', Array.from(courseNames));
 
+                    // 모든 교과목이 일치하는 행 찾기
                     const matchingRow = finalCsvData.find(row => {
-                        const courseMatch = Array.from(courseNames).includes(row.course);
-                        const subjectsMatch = row.subjects.every(subject => selectedSubjectsList.includes(subject));
-                        console.log('비교 중인 행:', row);
-                        console.log('코스 매치:', courseMatch);
-                        console.log('교과목 매치:', subjectsMatch);
-                        return courseMatch && subjectsMatch;
+                        // 2학년과 3학년 교과목을 하나의 배열로 합치기
+                        const allSubjects = [...row.grade2, ...row.grade3];
+                        console.log('현재 행의 모든 교과목:', allSubjects);
+                        
+                        // 선택된 교과목이 모두 포함되어 있는지 확인
+                        const allSubjectsMatch = selectedSubjectsList.every(selectedSubject => 
+                            allSubjects.some(subject => subject.includes(selectedSubject))
+                        );
+                        
+                        console.log('교과목 매치 결과:', allSubjectsMatch);
+                        return allSubjectsMatch;
                     });
 
                     console.log('일치하는 행:', matchingRow);
 
                     if (matchingRow) {
-                        matchingRow.certificates.forEach(cert => certificates.add(cert));
-                        matchingRow.jobs.forEach(job => jobs.add(job));
-                        matchingRow.departments.forEach(dept => departments.add(dept));
+                        // 자격증, 직업, 학과 정보 추가
+                        matchingRow.certificates.forEach(cert => {
+                            if (cert) certificates.add(cert);
+                        });
+                        matchingRow.jobs.forEach(job => {
+                            if (job) jobs.add(job);
+                        });
+                        matchingRow.departments.forEach(dept => {
+                            if (dept) departments.add(dept);
+                        });
+                    } else {
+                        console.log('일치하는 행을 찾을 수 없습니다.');
                     }
                 }
 
