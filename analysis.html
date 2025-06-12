@@ -194,18 +194,36 @@
                             // 타입에서 '코스'와 공백 제거
                             const typeKey = (selected.type || '').replace('코스', '').replace(/\s/g, '');
                             let subjectList = [];
+                            
+                            // 교과목 목록 가져오기
                             if (typeKey.includes('2학년전공')) subjectList = row['2학년전공'].split(', ');
                             else if (typeKey.includes('2학년융합')) subjectList = row['2학년융합'].split(', ');
                             else if (typeKey.includes('2학년학점제')) subjectList = row['2학년학점제'].split(', ');
                             else if (typeKey.includes('3학년전공')) subjectList = row['3학년전공'].split(', ');
                             else if (typeKey.includes('3학년제작')) subjectList = row['3학년제작'].split(', ');
                             else if (typeKey.includes('3학년학점제')) subjectList = row['3학년학점제'].split(', ');
-                            else if (typeKey.includes('2학년')) subjectList = [...row['2학년전공'].split(', '), ...row['2학년융합'].split(', '), ...row['2학년학점제'].split(', ')];
-                            else if (typeKey.includes('3학년')) subjectList = [...row['3학년전공'].split(', '), ...row['3학년제작'].split(', '), ...row['3학년학점제'].split(', ')];
+                            else if (typeKey.includes('2학년')) {
+                                subjectList = [
+                                    ...row['2학년전공'].split(', '),
+                                    ...row['2학년융합'].split(', '),
+                                    ...row['2학년학점제'].split(', ')
+                                ];
+                            }
+                            else if (typeKey.includes('3학년')) {
+                                subjectList = [
+                                    ...row['3학년전공'].split(', '),
+                                    ...row['3학년제작'].split(', '),
+                                    ...row['3학년학점제'].split(', ')
+                                ];
+                            }
 
                             // 공백 제거 후 부분일치
                             const selectedName = selected.subject.replace(/\s/g, '');
-                            const found = subjectList.some(subject => subject.replace(/\s/g, '').includes(selectedName));
+                            const found = subjectList.some(subject => {
+                                const normalizedSubject = subject.replace(/\s/g, '');
+                                return normalizedSubject.includes(selectedName) || selectedName.includes(normalizedSubject);
+                            });
+
                             if (found) {
                                 matchCount++;
                                 console.log('일치:', selected.subject, '->', subjectList);
@@ -215,7 +233,7 @@
                         });
 
                         console.log('이 행의 최종 일치 개수:', matchCount);
-                        return matchCount === 10;
+                        return matchCount === selectedSubjectsList.length;
                     });
 
                     console.log('매칭된 행:', matchingRow);
