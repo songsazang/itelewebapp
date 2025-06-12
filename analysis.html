@@ -193,7 +193,7 @@
                             selectedSubjectsList.push({
                                 subject: subjectInfo.subject,
                                 course: subjectInfo.course || '',
-                                type: subjectInfo.courseType || ''
+                                type: subjectInfo.courseType || grade // null이면 학년 정보라도 사용
                             });
                         });
                     });
@@ -201,44 +201,45 @@
 
                     // 모든 교과목이 일치하는 행 찾기
                     const matchingRow = finalCsvData.find(row => {
-                        console.log('현재 검사 중인 행:', row);
-                        
-                        // 코스가 일치하는지 확인
+                        // 코스명 매칭
                         const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
                         if (selectedCourse && row.course !== selectedCourse) {
-                            console.log('코스가 일치하지 않음:', selectedCourse, row.course);
+                            console.log('코스 불일치:', selectedCourse, row.course);
                             return false;
                         }
 
-                        // 각 교과목 매칭
                         let matchCount = 0;
                         selectedSubjectsList.forEach(selected => {
-                            let subjectList;
                             // 타입에서 '코스'와 공백 제거
                             const typeKey = (selected.type || '').replace('코스', '').replace(/\s/g, '');
+                            let subjectList = [];
                             if (typeKey.includes('2학년전공')) subjectList = row.grade2Major;
                             else if (typeKey.includes('2학년융합')) subjectList = row.grade2Convergence;
                             else if (typeKey.includes('2학년학점제')) subjectList = row.grade2Credit;
                             else if (typeKey.includes('3학년전공')) subjectList = row.grade3Major;
                             else if (typeKey.includes('3학년제작')) subjectList = row.grade3Production;
                             else if (typeKey.includes('3학년학점제')) subjectList = row.grade3Credit;
+                            else if (typeKey.includes('2학년')) subjectList = [...row.grade2Major, ...row.grade2Convergence, ...row.grade2Credit];
+                            else if (typeKey.includes('3학년')) subjectList = [...row.grade3Major, ...row.grade3Production, ...row.grade3Credit];
 
-                            console.log('검사 중인 교과목:', selected.subject);
-                            console.log('해당하는 교과목 목록:', subjectList);
-                            
-                            if (subjectList && subjectList.some(subject => subject.replace(/\s/g, '').includes(selected.subject.replace(/\s/g, '')))) {
+                            // 공백 제거 후 부분일치
+                            const selectedName = selected.subject.replace(/\s/g, '');
+                            const found = subjectList.some(subject => subject.replace(/\s/g, '').includes(selectedName));
+                            if (found) {
                                 matchCount++;
+                                console.log('일치:', selected.subject, '->', subjectList);
+                            } else {
+                                console.log('불일치:', selected.subject, '->', subjectList);
                             }
                         });
 
-                        console.log('일치하는 교과목 수:', matchCount);
+                        console.log('이 행의 최종 일치 개수:', matchCount);
                         return matchCount === 10;
                     });
 
                     console.log('매칭된 행:', matchingRow);
 
                     if (matchingRow) {
-                        // 자격증, 직업, 학과 정보 추가
                         matchingRow.certificates.forEach(cert => {
                             if (cert) certificates.add(cert);
                         });
