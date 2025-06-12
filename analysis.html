@@ -86,322 +86,163 @@
         </main>
     </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const params = new URLSearchParams(window.location.search);
-        const encodedData = params.get('data');
-        const analysisResultContainer = document.getElementById('analysis-result');
-        let finalJsonData = null;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const encodedData = params.get('data');
+    const analysisResultContainer = document.getElementById('analysis-result');
 
-        // 텍스트 정규화 함수 추가
-        function normalizeText(text) {
-            return text.replace(/\s+/g, '').toLowerCase();
-        }
+    // 텍스트 정규화 함수
+    function normalizeText(text) {
+        return text.replace(/\s+/g, '').toLowerCase();
+    }
 
-        // JSON 파일 로드
-        fetch('select.json')
-            .then(response => response.json())
-            .then(data => {
-                console.log('JSON 파일 로드 성공');
-                finalJsonData = data;
-                console.log('파싱된 finalJsonData:', finalJsonData);
-            })
-            .catch(error => {
-                console.error('JSON 파일 로드 실패:', error);
+    if (!encodedData) return;
+
+    fetch('select.json')
+        .then(response => response.json())
+        .then(finalJsonData => {
+            const decodedData = decodeURIComponent(encodedData);
+            const selectedSubjects = JSON.parse(decodedData);
+
+            // 코스명 표시
+            const courseNames = new Set();
+            Object.values(selectedSubjects).forEach(subjects => {
+                subjects.forEach(subjectInfo => {
+                    if (subjectInfo.course) {
+                        courseNames.add(subjectInfo.course);
+                    }
+                });
+            });
+            if (courseNames.size > 0) {
+                const courseTitle = document.createElement('div');
+                courseTitle.className = 'text-center text-2xl font-semibold text-blue-700 mb-8';
+                courseTitle.textContent = `선택한 전공 코스: ${Array.from(courseNames).join(', ')}`;
+                analysisResultContainer.parentNode.insertBefore(courseTitle, analysisResultContainer);
+            }
+
+            Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
+                if (subjects.length > 0) {
+                    const gradeSection = document.createElement('div');
+                    const gradeTitle = document.createElement('h2');
+                    gradeTitle.className = 'text-2xl font-bold text-gray-700 mb-4';
+                    gradeTitle.textContent = grade;
+                    gradeSection.appendChild(gradeTitle);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+
+                    subjects.forEach(subjectInfo => {
+                        const subjectDiv = document.createElement('div');
+                        subjectDiv.className = 'subject-card p-4 rounded-lg shadow';
+
+                        let typeText = '';
+                        if (subjectInfo.courseType) {
+                            typeText = subjectInfo.courseType.replace(/학년 /g, '');
+                        } else if (subjectInfo.course) {
+                            typeText = '전공코스';
+                        }
+
+                        subjectDiv.innerHTML = `
+                            <p class="font-semibold text-lg text-blue-800">${subjectInfo.subject}</p>
+                            <p class="text-sm text-gray-600">${typeText}</p>
+                        `;
+                        grid.appendChild(subjectDiv);
+                    });
+
+                    gradeSection.appendChild(grid);
+                    analysisResultContainer.appendChild(gradeSection);
+                }
             });
 
-        if (encodedData) {
-            try {
-                const decodedData = decodeURIComponent(encodedData);
-                const selectedSubjects = JSON.parse(decodedData);
-                console.log('선택된 교과목 데이터:', selectedSubjects);
-                
-                // 코스명 추출 및 표시
-                const courseNames = new Set();
-                Object.values(selectedSubjects).forEach(subjects => {
-                    subjects.forEach(subjectInfo => {
-                        if (subjectInfo.course) {
-                            courseNames.add(subjectInfo.course);
-                        }
+            // 연관 정보 매칭
+            const certificates = new Set();
+            const jobs = new Set();
+            const departments = new Set();
+
+            const selectedSubjectsList = [];
+            Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
+                subjects.forEach(subjectInfo => {
+                    selectedSubjectsList.push({
+                        subject: subjectInfo.subject,
+                        course: subjectInfo.course || '',
+                        type: subjectInfo.courseType || grade
                     });
                 });
-                if (courseNames.size > 0) {
-                    const courseTitle = document.createElement('div');
-                    courseTitle.className = 'text-center text-2xl font-semibold text-blue-700 mb-8';
-                    courseTitle.textContent = `선택한 전공 코스: ${Array.from(courseNames).join(', ')}`;
-                    analysisResultContainer.parentNode.insertBefore(courseTitle, analysisResultContainer);
-                }
+            });
 
-                Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
-                    if (subjects.length > 0) {
-                        const gradeSection = document.createElement('div');
-                        
-                        const gradeTitle = document.createElement('h2');
-                        gradeTitle.className = 'text-2xl font-bold text-gray-700 mb-4';
-                        gradeTitle.textContent = grade;
-                        gradeSection.appendChild(gradeTitle);
+            const matchingRow = finalJsonData.find(row => {
+                const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
+                if (selectedCourse && normalizeText(row.course) !== normalizeText(selectedCourse)) return false;
 
-                        const grid = document.createElement('div');
-                        grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
-                        
-                        subjects.forEach(subjectInfo => {
-                            const subjectDiv = document.createElement('div');
-                            subjectDiv.className = 'subject-card p-4 rounded-lg shadow';
-                            
-                            let typeText = '';
-                            if (subjectInfo.courseType) {
-                                typeText = subjectInfo.courseType.replace(/학년 /g, '');
-                            } else if (subjectInfo.course) {
-                                typeText = '전공코스';
-                            }
+                const groupedSubjects = {
+                    'year2_convergence': [],
+                    'year2_credit': [],
+                    'year3_production': [],
+                    'year3_credit': []
+                };
 
-                            subjectDiv.innerHTML = `
-                                <p class="font-semibold text-lg text-blue-800">${subjectInfo.subject}</p>
-                                <p class="text-sm text-gray-600">${typeText}</p>
-                            `;
-                            grid.appendChild(subjectDiv);
-                        });
-
-                        gradeSection.appendChild(grid);
-                        analysisResultContainer.appendChild(gradeSection);
-                    }
+                selectedSubjectsList.forEach(selected => {
+                    const typeKey = (selected.type || '').replace('코스', '').replace(/\s/g, '');
+                    if (typeKey === '2학년융합') groupedSubjects.year2_convergence.push(selected.subject);
+                    else if (typeKey === '2학년학점제') groupedSubjects.year2_credit.push(selected.subject);
+                    else if (typeKey === '3학년제작') groupedSubjects.year3_production.push(selected.subject);
+                    else if (typeKey === '3학년학점제') groupedSubjects.year3_credit.push(selected.subject);
                 });
 
-                // 연관 정보 표시
-                const certificates = new Set();
-                const jobs = new Set();
-                const departments = new Set();
+                for (const [type, subjects] of Object.entries(groupedSubjects)) {
+                    if (subjects.length === 0) continue;
 
-                // select.json에서 일치하는 행 찾기
-                if (finalJsonData) {
-                    const selectedSubjectsList = [];
-                    Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
-                        subjects.forEach(subjectInfo => {
-                            selectedSubjectsList.push({
-                                subject: subjectInfo.subject,
-                                course: subjectInfo.course || '',
-                                type: subjectInfo.courseType || grade
-                            });
-                        });
-                    });
-                    console.log('선택된 교과목 목록:', selectedSubjectsList);
+                    let rowSubjects = (row[type] || '').split(',').map(s => s.trim());
+                    const allMatch = subjects.every(sel =>
+                        rowSubjects.some(rowSub =>
+                            normalizeText(rowSub).includes(normalizeText(sel)) ||
+                            normalizeText(sel).includes(normalizeText(rowSub))
+                        )
+                    );
+                    if (!allMatch) return false;
+                }
+                return true;
+            });
 
-                    // 모든 교과목이 일치하는 행 찾기
-                    const matchingRow = finalJsonData.find(row => {
-                        console.log('\n=== 새로운 행 검사 시작 ===');
-                        console.log('현재 검사 중인 행:', row);
-                        
-                        // 코스명 매칭 (정규화 적용)
-                        const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
-                        console.log('선택된 코스:', selectedCourse);
-                        console.log('행의 코스:', row.course);
-                        
-                        if (selectedCourse && normalizeText(row.course) !== normalizeText(selectedCourse)) {
-                            console.log('코스 불일치:', selectedCourse, row.course);
-                            return false;
-                        }
-
-                        // 학년별로 선택된 교과목 그룹화
-                        const groupedSubjects = {
-                            'year2_convergence': [],
-                            'year2_credit': [],
-                            'year3_production': [],
-                            'year3_credit': []
-                        };
-
-                        selectedSubjectsList.forEach(selected => {
-                            const typeKey = (selected.type || '').replace('코스', '').replace(/\s/g, '');
-                            console.log('교과목 타입 변환:', selected.type, '->', typeKey);
-                            if (typeKey === '2학년융합') {
-                                groupedSubjects.year2_convergence.push(selected.subject);
-                            } else if (typeKey === '2학년학점제') {
-                                groupedSubjects.year2_credit.push(selected.subject);
-                            } else if (typeKey === '3학년제작') {
-                                groupedSubjects.year3_production.push(selected.subject);
-                            } else if (typeKey === '3학년학점제') {
-                                groupedSubjects.year3_credit.push(selected.subject);
-                            }
-                        });
-
-                        console.log('그룹화된 교과목:', groupedSubjects);
-
-                        // 각 그룹별로 매칭 확인
-                        for (const [type, subjects] of Object.entries(groupedSubjects)) {
-                            if (subjects.length === 0) {
-                                console.log(`${type}: 선택된 교과목 없음, 건너뜀`);
-                                continue;
-                            }
-
-                            let rowSubjects = [];
-                            switch(type) {
-                                case 'year2_convergence':
-                                    rowSubjects = (row.year2_convergence || '').split(',').map(s => s.trim());
-                                    break;
-                                case 'year2_credit':
-                                    rowSubjects = (row.year2_credit || '').split(',').map(s => s.trim());
-                                    break;
-                                case 'year3_production':
-                                    rowSubjects = (row.year3_production || '').split(',').map(s => s.trim());
-                                    break;
-                                case 'year3_credit':
-                                    rowSubjects = (row.year3_credit || '').split(',').map(s => s.trim());
-                                    break;
-                            }
-
-                            console.log(`\n${type} 매칭 시도:`, {
-                                selected: subjects,
-                                rowSubjects: rowSubjects,
-                                rowData: row[type]
-                            });
-
-                            // 선택된 교과목들이 모두 포함되어 있는지 확인 (정규화 적용)
-                            const allSubjectsMatch = subjects.every(selectedSubject => {
-                                const normalizedSelected = normalizeText(selectedSubject);
-                                console.log(`\n교과목 매칭 시도: ${selectedSubject}`);
-                                console.log('정규화된 선택 교과목:', normalizedSelected);
-                                
-                                const match = rowSubjects.some(rowSubject => {
-                                    const normalizedRow = normalizeText(rowSubject);
-                                    console.log('정규화된 행 교과목:', normalizedRow);
-                                    
-                                    const isMatch = normalizedRow.includes(normalizedSelected) || 
-                                                  normalizedSelected.includes(normalizedRow);
-                                    if (isMatch) {
-                                        console.log('매칭 성공:', selectedSubject, '->', rowSubject);
-                                    }
-                                    return isMatch;
-                                });
-
-                                if (!match) {
-                                    console.log('매칭 실패:', selectedSubject);
-                                    console.log('가능한 교과목들:', rowSubjects);
-                                }
-                                return match;
-                            });
-
-                            if (!allSubjectsMatch) {
-                                console.log(`${type} 매칭 실패:`, subjects, '->', rowSubjects);
-                                return false;
-                            }
-                            console.log(`${type} 매칭 성공:`, subjects, '->', rowSubjects);
-                        }
-
-                        console.log('\n=== 모든 매칭 성공! ===');
-                        return true;
-                    });
-
-                    console.log('\n=== 매칭 결과 ===');
-                    console.log('매칭된 행:', matchingRow);
-
-                    if (matchingRow) {
-                        console.log('\n=== 연관 정보 ===');
-                        console.log('자격증 목록:', matchingRow.certificates);
-                        console.log('진출가능직업:', matchingRow.possible_jobs);
-                        console.log('진학가능학과:', matchingRow.possible_departments);
-                        
-                        // 자격증, 직업, 학과 정보 처리
-                        if (matchingRow.certificates) {
-                            matchingRow.certificates.split(',').forEach(cert => {
-                                if (cert.trim()) certificates.add(cert.trim());
-                            });
-                        }
-                        if (matchingRow.possible_jobs) {
-                            matchingRow.possible_jobs.split(',').forEach(job => {
-                                if (job.trim()) jobs.add(job.trim());
-                            });
-                        }
-                        if (matchingRow.possible_departments) {
-                            matchingRow.possible_departments.split(',').forEach(dept => {
-                                if (dept.trim()) departments.add(dept.trim());
-                            });
-                        }
-                    } else {
-                        console.log('\n=== 매칭 실패 ===');
-                        console.log('일치하는 행을 찾을 수 없습니다.');
-                        // 일치하는 행이 없을 경우 연관 정보 섹션 숨기기
-                        document.getElementById('related-info').style.display = 'none';
-                    }
+            if (matchingRow) {
+                // 관련 정보 출력
+                if (matchingRow.certificates) {
+                    matchingRow.certificates.split(',').forEach(cert => certificates.add(cert.trim()));
+                }
+                if (matchingRow.possible_jobs) {
+                    matchingRow.possible_jobs.split(',').forEach(job => jobs.add(job.trim()));
+                }
+                if (matchingRow.possible_departments) {
+                    matchingRow.possible_departments.split(',').forEach(dept => departments.add(dept.trim()));
                 }
 
-                console.log('최종 자격증:', Array.from(certificates));
-                console.log('최종 직업:', Array.from(jobs));
-                console.log('최종 학과:', Array.from(departments));
-
-                // 연관 정보를 HTML에 추가
-                const certificatesContainer = document.getElementById('certificates');
-                const jobsContainer = document.getElementById('jobs');
-                const departmentsContainer = document.getElementById('departments');
+                const certContainer = document.getElementById('certificates');
+                const jobContainer = document.getElementById('jobs');
+                const deptContainer = document.getElementById('departments');
 
                 certificates.forEach(cert => {
                     const p = document.createElement('p');
-                    p.className = 'text-gray-700';
                     p.textContent = cert;
-                    certificatesContainer.appendChild(p);
+                    certContainer.appendChild(p);
                 });
-
                 jobs.forEach(job => {
                     const p = document.createElement('p');
-                    p.className = 'text-gray-700';
                     p.textContent = job;
-                    jobsContainer.appendChild(p);
+                    jobContainer.appendChild(p);
                 });
-
                 departments.forEach(dept => {
                     const p = document.createElement('p');
-                    p.className = 'text-gray-700';
                     p.textContent = dept;
-                    departmentsContainer.appendChild(p);
+                    deptContainer.appendChild(p);
                 });
-
-            } catch (error) {
-                analysisResultContainer.innerHTML = '<p class="text-center text-red-500">교육과정 정보를 불러오는 데 실패했습니다.</p>';
-                console.error('Error parsing subject data:', error);
             }
-        } else {
-            analysisResultContainer.innerHTML = '<p class="text-center text-gray-500">선택된 교육과정 정보가 없습니다. 교육과정을 먼저 만들어주세요.</p>';
-        }
-
-        // 클릭 효과 추가
-        document.addEventListener('click', function(e) {
-            const effect = document.createElement('div');
-            effect.className = 'click-effect';
-            effect.style.left = e.pageX + 'px';
-            effect.style.top = e.pageY + 'px';
-            document.body.appendChild(effect);
-
-            // 애니메이션 종료 후 요소 제거
-            effect.addEventListener('animationend', function() {
-                effect.remove();
-            });
+        })
+        .catch(error => {
+            console.error('JSON 로딩 실패:', error);
         });
+});
+</script>
 
-        // 스크롤 관련 기능 추가
-        let isScrolling = false;
-        let startY;
-        let scrollTop;
-
-        document.querySelector('.scrollable').addEventListener('mousedown', function(e) {
-            isScrolling = true;
-            startY = e.pageY - this.offsetTop;
-            scrollTop = this.scrollTop;
-        });
-
-        document.addEventListener('mousemove', function(e) {
-            if (!isScrolling) return;
-            e.preventDefault();
-            const y = e.pageY - document.querySelector('.scrollable').offsetTop;
-            const walk = (y - startY) * 2;
-            document.querySelector('.scrollable').scrollTop = scrollTop - walk;
-        });
-
-        document.addEventListener('mouseup', function() {
-            isScrolling = false;
-        });
-
-        document.addEventListener('mouseleave', function() {
-            isScrolling = false;
-        });
-    });
-    </script>
 </body>
 </html> 
