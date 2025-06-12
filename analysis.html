@@ -219,16 +219,16 @@
                             let rowSubjects = [];
                             switch(type) {
                                 case '2학년융합':
-                                    rowSubjects = row['2학년융합'].split(', ');
+                                    rowSubjects = (row['2학년융합'] || '').split(',').map(s => s.trim());
                                     break;
                                 case '2학년학점제':
-                                    rowSubjects = row['2학년학점제'].split(', ');
+                                    rowSubjects = (row['2학년학점제'] || '').split(',').map(s => s.trim());
                                     break;
                                 case '3학년제작':
-                                    rowSubjects = row['3학년제작'].split(', ');
+                                    rowSubjects = (row['3학년제작'] || '').split(',').map(s => s.trim());
                                     break;
                                 case '3학년학점제':
-                                    rowSubjects = row['3학년학점제'].split(', ');
+                                    rowSubjects = (row['3학년학점제'] || '').split(',').map(s => s.trim());
                                     break;
                             }
 
@@ -260,14 +260,14 @@
                     console.log('매칭된 행:', matchingRow);
 
                     if (matchingRow) {
-                        matchingRow.자격증목록.split(', ').forEach(cert => {
-                            if (cert) certificates.add(cert);
+                        (matchingRow.자격증목록 || '').split(',').forEach(cert => {
+                            if (cert.trim()) certificates.add(cert.trim());
                         });
-                        matchingRow.진출가능직업.split(', ').forEach(job => {
-                            if (job) jobs.add(job);
+                        (matchingRow.진출가능직업 || '').split(',').forEach(job => {
+                            if (job.trim()) jobs.add(job.trim());
                         });
-                        matchingRow.진학가능학과.split(', ').forEach(dept => {
-                            if (dept) departments.add(dept);
+                        (matchingRow.진학가능학과 || '').split(',').forEach(dept => {
+                            if (dept.trim()) departments.add(dept.trim());
                         });
                     } else {
                         console.log('일치하는 행을 찾을 수 없습니다.');
