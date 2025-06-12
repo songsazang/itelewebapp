@@ -94,11 +94,11 @@
         let finalCsvData = null;
 
         // CSV 파일 로드
-        fetch('select_final.csv')
+        fetch('select_final_last.csv')
             .then(response => response.text())
             .then(data => {
                 console.log('CSV 파일 로드 성공');
-                console.log('select_final.csv 내용:', data);
+                console.log('select_final_last.csv 내용:', data);
 
                 const rows = data.split('\n').filter(row => row.trim() !== '');
                 console.log('분리된 행:', rows);
@@ -208,7 +208,7 @@
                 const jobs = new Set();
                 const departments = new Set();
 
-                // select_final.csv에서 일치하는 행 찾기
+                // select_final_last.csv에서 일치하는 행 찾기
                 if (finalCsvData) {
                     const selectedSubjectsList = [];
                     Object.values(selectedSubjects).forEach(subjects => {
