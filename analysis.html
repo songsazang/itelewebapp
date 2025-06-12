@@ -192,7 +192,8 @@
                         subjects.forEach(subjectInfo => {
                             selectedSubjectsList.push({
                                 subject: subjectInfo.subject,
-                                type: grade // 2학년전공, 2학년융합 등
+                                course: subjectInfo.course || '',
+                                type: subjectInfo.courseType || ''
                             });
                         });
                     });
@@ -201,40 +202,32 @@
                     // 모든 교과목이 일치하는 행 찾기
                     const matchingRow = finalCsvData.find(row => {
                         console.log('현재 검사 중인 행:', row);
-                        console.log('선택된 코스:', Array.from(courseNames));
-                        console.log('현재 행의 코스:', row.course);
-
+                        
                         // 코스가 일치하는지 확인
-                        if (!Array.from(courseNames).includes(row.course)) {
-                            console.log('코스가 일치하지 않음');
+                        const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
+                        if (selectedCourse && row.course !== selectedCourse) {
+                            console.log('코스가 일치하지 않음:', selectedCourse, row.course);
                             return false;
                         }
 
-                        // 각 학년/유형별 교과목 매칭
+                        // 각 교과목 매칭
                         let matchCount = 0;
                         selectedSubjectsList.forEach(selected => {
                             let subjectList;
-                            switch(selected.type) {
-                                case '2학년전공':
-                                    subjectList = row.grade2Major;
-                                    break;
-                                case '2학년융합':
-                                    subjectList = row.grade2Convergence;
-                                    break;
-                                case '2학년학점제':
-                                    subjectList = row.grade2Credit;
-                                    break;
-                                case '3학년전공':
-                                    subjectList = row.grade3Major;
-                                    break;
-                                case '3학년제작':
-                                    subjectList = row.grade3Production;
-                                    break;
-                                case '3학년학점제':
-                                    subjectList = row.grade3Credit;
-                                    break;
+                            if (selected.type.includes('2학년전공')) {
+                                subjectList = row.grade2Major;
+                            } else if (selected.type.includes('2학년융합')) {
+                                subjectList = row.grade2Convergence;
+                            } else if (selected.type.includes('2학년학점제')) {
+                                subjectList = row.grade2Credit;
+                            } else if (selected.type.includes('3학년전공')) {
+                                subjectList = row.grade3Major;
+                            } else if (selected.type.includes('3학년제작')) {
+                                subjectList = row.grade3Production;
+                            } else if (selected.type.includes('3학년학점제')) {
+                                subjectList = row.grade3Credit;
                             }
-                            
+
                             console.log('검사 중인 교과목:', selected.subject);
                             console.log('해당하는 교과목 목록:', subjectList);
                             
