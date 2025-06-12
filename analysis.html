@@ -188,8 +188,13 @@
 
                     // 모든 교과목이 일치하는 행 찾기
                     const matchingRow = finalJsonData.find(row => {
+                        console.log('현재 검사 중인 행:', row);
+                        
                         // 코스명 매칭 (정규화 적용)
                         const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
+                        console.log('선택된 코스:', selectedCourse);
+                        console.log('행의 코스:', row.코스);
+                        
                         if (selectedCourse && normalizeText(row.코스) !== normalizeText(selectedCourse)) {
                             console.log('코스 불일치:', selectedCourse, row.코스);
                             return false;
@@ -234,17 +239,26 @@
 
                             console.log(`${type} 매칭 시도:`, {
                                 selected: subjects,
-                                rowSubjects: rowSubjects
+                                rowSubjects: rowSubjects,
+                                rowData: row[type]
                             });
 
                             // 선택된 교과목들이 모두 포함되어 있는지 확인 (정규화 적용)
                             const allSubjectsMatch = subjects.every(selectedSubject => {
                                 const normalizedSelected = normalizeText(selectedSubject);
-                                return rowSubjects.some(rowSubject => {
+                                const match = rowSubjects.some(rowSubject => {
                                     const normalizedRow = normalizeText(rowSubject);
-                                    return normalizedRow.includes(normalizedSelected) || 
-                                           normalizedSelected.includes(normalizedRow);
+                                    const isMatch = normalizedRow.includes(normalizedSelected) || 
+                                                  normalizedSelected.includes(normalizedRow);
+                                    if (isMatch) {
+                                        console.log('매칭 성공:', selectedSubject, '->', rowSubject);
+                                    }
+                                    return isMatch;
                                 });
+                                if (!match) {
+                                    console.log('매칭 실패:', selectedSubject);
+                                }
+                                return match;
                             });
 
                             if (!allSubjectsMatch) {
@@ -254,12 +268,17 @@
                             console.log(`${type} 매칭 성공:`, subjects, '->', rowSubjects);
                         }
 
+                        console.log('모든 매칭 성공!');
                         return true;
                     });
 
                     console.log('매칭된 행:', matchingRow);
 
                     if (matchingRow) {
+                        console.log('자격증 목록:', matchingRow.자격증목록);
+                        console.log('진출가능직업:', matchingRow.진출가능직업);
+                        console.log('진학가능학과:', matchingRow.진학가능학과);
+                        
                         (matchingRow.자격증목록 || '').split(',').forEach(cert => {
                             if (cert.trim()) certificates.add(cert.trim());
                         });
