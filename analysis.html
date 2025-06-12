@@ -214,30 +214,19 @@
                         let matchCount = 0;
                         selectedSubjectsList.forEach(selected => {
                             let subjectList;
-                            if (selected.type.includes('2학년전공')) {
-                                subjectList = row.grade2Major;
-                            } else if (selected.type.includes('2학년융합')) {
-                                subjectList = row.grade2Convergence;
-                            } else if (selected.type.includes('2학년학점제')) {
-                                subjectList = row.grade2Credit;
-                            } else if (selected.type.includes('3학년전공')) {
-                                subjectList = row.grade3Major;
-                            } else if (selected.type.includes('3학년제작')) {
-                                subjectList = row.grade3Production;
-                            } else if (selected.type.includes('3학년학점제')) {
-                                subjectList = row.grade3Credit;
-                            }
+                            // 타입에서 '코스'와 공백 제거
+                            const typeKey = (selected.type || '').replace('코스', '').replace(/\s/g, '');
+                            if (typeKey.includes('2학년전공')) subjectList = row.grade2Major;
+                            else if (typeKey.includes('2학년융합')) subjectList = row.grade2Convergence;
+                            else if (typeKey.includes('2학년학점제')) subjectList = row.grade2Credit;
+                            else if (typeKey.includes('3학년전공')) subjectList = row.grade3Major;
+                            else if (typeKey.includes('3학년제작')) subjectList = row.grade3Production;
+                            else if (typeKey.includes('3학년학점제')) subjectList = row.grade3Credit;
 
                             console.log('검사 중인 교과목:', selected.subject);
                             console.log('해당하는 교과목 목록:', subjectList);
                             
-                            if (subjectList && subjectList.some(subject => {
-                                const isMatch = subject.includes(selected.subject);
-                                if (isMatch) {
-                                    console.log('일치하는 교과목 발견:', selected.subject, 'in', subject);
-                                }
-                                return isMatch;
-                            })) {
+                            if (subjectList && subjectList.some(subject => subject.replace(/\s/g, '').includes(selected.subject.replace(/\s/g, '')))) {
                                 matchCount++;
                             }
                         });
