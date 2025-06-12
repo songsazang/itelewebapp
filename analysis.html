@@ -93,6 +93,11 @@
         const analysisResultContainer = document.getElementById('analysis-result');
         let finalJsonData = null;
 
+        // 텍스트 정규화 함수 추가
+        function normalizeText(text) {
+            return text.replace(/\s+/g, '').toLowerCase();
+        }
+
         // JSON 파일 로드
         fetch('select.json')
             .then(response => response.json())
@@ -109,6 +114,7 @@
             try {
                 const decodedData = decodeURIComponent(encodedData);
                 const selectedSubjects = JSON.parse(decodedData);
+                console.log('선택된 교과목 데이터:', selectedSubjects);
                 
                 // 코스명 추출 및 표시
                 const courseNames = new Set();
@@ -182,9 +188,9 @@
 
                     // 모든 교과목이 일치하는 행 찾기
                     const matchingRow = finalJsonData.find(row => {
-                        // 코스명 매칭
+                        // 코스명 매칭 (정규화 적용)
                         const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
-                        if (selectedCourse && row.코스 !== selectedCourse) {
+                        if (selectedCourse && normalizeText(row.코스) !== normalizeText(selectedCourse)) {
                             console.log('코스 불일치:', selectedCourse, row.코스);
                             return false;
                         }
@@ -203,6 +209,8 @@
                                 groupedSubjects[typeKey].push(selected.subject);
                             }
                         });
+
+                        console.log('그룹화된 교과목:', groupedSubjects);
 
                         // 각 그룹별로 매칭 확인
                         for (const [type, subjects] of Object.entries(groupedSubjects)) {
@@ -224,12 +232,18 @@
                                     break;
                             }
 
-                            // 선택된 교과목들이 모두 포함되어 있는지 확인
+                            console.log(`${type} 매칭 시도:`, {
+                                selected: subjects,
+                                rowSubjects: rowSubjects
+                            });
+
+                            // 선택된 교과목들이 모두 포함되어 있는지 확인 (정규화 적용)
                             const allSubjectsMatch = subjects.every(selectedSubject => {
-                                const normalizedSelected = selectedSubject.replace(/\s/g, '');
+                                const normalizedSelected = normalizeText(selectedSubject);
                                 return rowSubjects.some(rowSubject => {
-                                    const normalizedRow = rowSubject.replace(/\s/g, '');
-                                    return normalizedRow.includes(normalizedSelected) || normalizedSelected.includes(normalizedRow);
+                                    const normalizedRow = normalizeText(rowSubject);
+                                    return normalizedRow.includes(normalizedSelected) || 
+                                           normalizedSelected.includes(normalizedRow);
                                 });
                             });
 
