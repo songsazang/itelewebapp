@@ -91,37 +91,18 @@
         const params = new URLSearchParams(window.location.search);
         const encodedData = params.get('data');
         const analysisResultContainer = document.getElementById('analysis-result');
-        let finalCsvData = null;
+        let finalJsonData = null;
 
-        // CSV 파일 로드
-        fetch('select_final_last.csv')
-            .then(response => response.text())
+        // JSON 파일 로드
+        fetch('select.json')
+            .then(response => response.json())
             .then(data => {
-                console.log('CSV 파일 로드 성공');
-                const rows = data.split('\n').filter(row => row.trim() !== '');
-                finalCsvData = rows.map(row => {
-                    const columns = row.split(',').map(col => col.trim());
-                    if (columns.length >= 10) {
-                        return {
-                            course: columns[0],
-                            grade2Major: columns[1].split(',').map(s => s.trim()),
-                            grade2Convergence: columns[2].split(',').map(s => s.trim()),
-                            grade2Credit: columns[3].split(',').map(s => s.trim()),
-                            grade3Major: columns[4].split(',').map(s => s.trim()),
-                            grade3Production: columns[5].split(',').map(s => s.trim()),
-                            grade3Credit: columns[6].split(',').map(s => s.trim()),
-                            certificates: columns[7].split(',').map(s => s.trim()),
-                            jobs: columns[8].split(',').map(s => s.trim()),
-                            departments: columns[9].split(',').map(s => s.trim())
-                        };
-                    }
-                    return null;
-                }).filter(item => item !== null);
-
-                console.log('파싱된 finalCsvData:', finalCsvData);
+                console.log('JSON 파일 로드 성공');
+                finalJsonData = data;
+                console.log('파싱된 finalJsonData:', finalJsonData);
             })
             .catch(error => {
-                console.error('CSV 파일 로드 실패:', error);
+                console.error('JSON 파일 로드 실패:', error);
             });
 
         if (encodedData) {
@@ -185,26 +166,26 @@
                 const jobs = new Set();
                 const departments = new Set();
 
-                // select_final_last.csv에서 일치하는 행 찾기
-                if (finalCsvData) {
+                // select.json에서 일치하는 행 찾기
+                if (finalJsonData) {
                     const selectedSubjectsList = [];
                     Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
                         subjects.forEach(subjectInfo => {
                             selectedSubjectsList.push({
                                 subject: subjectInfo.subject,
                                 course: subjectInfo.course || '',
-                                type: subjectInfo.courseType || grade // null이면 학년 정보라도 사용
+                                type: subjectInfo.courseType || grade
                             });
                         });
                     });
                     console.log('선택된 교과목 목록:', selectedSubjectsList);
 
                     // 모든 교과목이 일치하는 행 찾기
-                    const matchingRow = finalCsvData.find(row => {
+                    const matchingRow = finalJsonData.find(row => {
                         // 코스명 매칭
                         const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
-                        if (selectedCourse && row.course !== selectedCourse) {
-                            console.log('코스 불일치:', selectedCourse, row.course);
+                        if (selectedCourse && row.코스 !== selectedCourse) {
+                            console.log('코스 불일치:', selectedCourse, row.코스);
                             return false;
                         }
 
@@ -213,14 +194,14 @@
                             // 타입에서 '코스'와 공백 제거
                             const typeKey = (selected.type || '').replace('코스', '').replace(/\s/g, '');
                             let subjectList = [];
-                            if (typeKey.includes('2학년전공')) subjectList = row.grade2Major;
-                            else if (typeKey.includes('2학년융합')) subjectList = row.grade2Convergence;
-                            else if (typeKey.includes('2학년학점제')) subjectList = row.grade2Credit;
-                            else if (typeKey.includes('3학년전공')) subjectList = row.grade3Major;
-                            else if (typeKey.includes('3학년제작')) subjectList = row.grade3Production;
-                            else if (typeKey.includes('3학년학점제')) subjectList = row.grade3Credit;
-                            else if (typeKey.includes('2학년')) subjectList = [...row.grade2Major, ...row.grade2Convergence, ...row.grade2Credit];
-                            else if (typeKey.includes('3학년')) subjectList = [...row.grade3Major, ...row.grade3Production, ...row.grade3Credit];
+                            if (typeKey.includes('2학년전공')) subjectList = row['2학년전공'].split(', ');
+                            else if (typeKey.includes('2학년융합')) subjectList = row['2학년융합'].split(', ');
+                            else if (typeKey.includes('2학년학점제')) subjectList = row['2학년학점제'].split(', ');
+                            else if (typeKey.includes('3학년전공')) subjectList = row['3학년전공'].split(', ');
+                            else if (typeKey.includes('3학년제작')) subjectList = row['3학년제작'].split(', ');
+                            else if (typeKey.includes('3학년학점제')) subjectList = row['3학년학점제'].split(', ');
+                            else if (typeKey.includes('2학년')) subjectList = [...row['2학년전공'].split(', '), ...row['2학년융합'].split(', '), ...row['2학년학점제'].split(', ')];
+                            else if (typeKey.includes('3학년')) subjectList = [...row['3학년전공'].split(', '), ...row['3학년제작'].split(', '), ...row['3학년학점제'].split(', ')];
 
                             // 공백 제거 후 부분일치
                             const selectedName = selected.subject.replace(/\s/g, '');
@@ -240,13 +221,13 @@
                     console.log('매칭된 행:', matchingRow);
 
                     if (matchingRow) {
-                        matchingRow.certificates.forEach(cert => {
+                        matchingRow.자격증목록.split(', ').forEach(cert => {
                             if (cert) certificates.add(cert);
                         });
-                        matchingRow.jobs.forEach(job => {
+                        matchingRow.진출가능직업.split(', ').forEach(job => {
                             if (job) jobs.add(job);
                         });
-                        matchingRow.departments.forEach(dept => {
+                        matchingRow.진학가능학과.split(', ').forEach(dept => {
                             if (dept) departments.add(dept);
                         });
                     } else {
