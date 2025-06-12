@@ -98,17 +98,21 @@
             .then(response => response.text())
             .then(data => {
                 console.log('CSV 파일 로드 성공');
-                console.log('select_final_last.csv 내용:', data);
-
                 const rows = data.split('\n').filter(row => row.trim() !== '');
                 finalCsvData = rows.map(row => {
                     const columns = row.split(',').map(col => col.trim());
-                    if (columns.length >= 4) {
+                    if (columns.length >= 10) {
                         return {
-                            subjects: columns[0].split(',').map(s => s.trim()),
-                            certificates: columns[1].split(',').map(s => s.trim()),
-                            jobs: columns[2].split(',').map(s => s.trim()),
-                            departments: columns[3].split(',').map(s => s.trim())
+                            course: columns[0],
+                            grade2Major: columns[1].split(',').map(s => s.trim()),
+                            grade2Convergence: columns[2].split(',').map(s => s.trim()),
+                            grade2Credit: columns[3].split(',').map(s => s.trim()),
+                            grade3Major: columns[4].split(',').map(s => s.trim()),
+                            grade3Production: columns[5].split(',').map(s => s.trim()),
+                            grade3Credit: columns[6].split(',').map(s => s.trim()),
+                            certificates: columns[7].split(',').map(s => s.trim()),
+                            jobs: columns[8].split(',').map(s => s.trim()),
+                            departments: columns[9].split(',').map(s => s.trim())
                         };
                     }
                     return null;
@@ -184,20 +188,53 @@
                 // select_final_last.csv에서 일치하는 행 찾기
                 if (finalCsvData) {
                     const selectedSubjectsList = [];
-                    Object.values(selectedSubjects).forEach(subjects => {
+                    Object.entries(selectedSubjects).forEach(([grade, subjects]) => {
                         subjects.forEach(subjectInfo => {
-                            selectedSubjectsList.push(subjectInfo.subject);
+                            selectedSubjectsList.push({
+                                subject: subjectInfo.subject,
+                                type: grade // 2학년전공, 2학년융합 등
+                            });
                         });
                     });
-                    console.log('선택된 교과목 목록:', selectedSubjectsList);
 
                     // 모든 교과목이 일치하는 행 찾기
                     const matchingRow = finalCsvData.find(row => {
-                        const allSubjects = row.subjects;
-                        const selectedCount = selectedSubjectsList.filter(selectedSubject => 
-                            allSubjects.some(subject => subject.includes(selectedSubject))
-                        ).length;
-                        return selectedCount === 10;
+                        // 코스가 일치하는지 확인
+                        if (!Array.from(courseNames).includes(row.course)) {
+                            return false;
+                        }
+
+                        // 각 학년/유형별 교과목 매칭
+                        let matchCount = 0;
+                        selectedSubjectsList.forEach(selected => {
+                            let subjectList;
+                            switch(selected.type) {
+                                case '2학년전공':
+                                    subjectList = row.grade2Major;
+                                    break;
+                                case '2학년융합':
+                                    subjectList = row.grade2Convergence;
+                                    break;
+                                case '2학년학점제':
+                                    subjectList = row.grade2Credit;
+                                    break;
+                                case '3학년전공':
+                                    subjectList = row.grade3Major;
+                                    break;
+                                case '3학년제작':
+                                    subjectList = row.grade3Production;
+                                    break;
+                                case '3학년학점제':
+                                    subjectList = row.grade3Credit;
+                                    break;
+                            }
+                            
+                            if (subjectList && subjectList.some(subject => subject.includes(selected.subject))) {
+                                matchCount++;
+                            }
+                        });
+
+                        return matchCount === 10;
                     });
 
                     if (matchingRow) {
