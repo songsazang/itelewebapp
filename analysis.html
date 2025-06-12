@@ -196,11 +196,17 @@
                             });
                         });
                     });
+                    console.log('선택된 교과목 목록:', selectedSubjectsList);
 
                     // 모든 교과목이 일치하는 행 찾기
                     const matchingRow = finalCsvData.find(row => {
+                        console.log('현재 검사 중인 행:', row);
+                        console.log('선택된 코스:', Array.from(courseNames));
+                        console.log('현재 행의 코스:', row.course);
+
                         // 코스가 일치하는지 확인
                         if (!Array.from(courseNames).includes(row.course)) {
+                            console.log('코스가 일치하지 않음');
                             return false;
                         }
 
@@ -229,13 +235,25 @@
                                     break;
                             }
                             
-                            if (subjectList && subjectList.some(subject => subject.includes(selected.subject))) {
+                            console.log('검사 중인 교과목:', selected.subject);
+                            console.log('해당하는 교과목 목록:', subjectList);
+                            
+                            if (subjectList && subjectList.some(subject => {
+                                const isMatch = subject.includes(selected.subject);
+                                if (isMatch) {
+                                    console.log('일치하는 교과목 발견:', selected.subject, 'in', subject);
+                                }
+                                return isMatch;
+                            })) {
                                 matchCount++;
                             }
                         });
 
+                        console.log('일치하는 교과목 수:', matchCount);
                         return matchCount === 10;
                     });
+
+                    console.log('매칭된 행:', matchingRow);
 
                     if (matchingRow) {
                         // 자격증, 직업, 학과 정보 추가
