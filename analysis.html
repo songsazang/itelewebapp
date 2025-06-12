@@ -194,26 +194,32 @@
                         // 코스명 매칭 (정규화 적용)
                         const selectedCourse = selectedSubjectsList.find(s => s.course)?.course;
                         console.log('선택된 코스:', selectedCourse);
-                        console.log('행의 코스:', row.코스);
+                        console.log('행의 코스:', row.course);
                         
-                        if (selectedCourse && normalizeText(row.코스) !== normalizeText(selectedCourse)) {
-                            console.log('코스 불일치:', selectedCourse, row.코스);
+                        if (selectedCourse && normalizeText(row.course) !== normalizeText(selectedCourse)) {
+                            console.log('코스 불일치:', selectedCourse, row.course);
                             return false;
                         }
 
                         // 학년별로 선택된 교과목 그룹화
                         const groupedSubjects = {
-                            '2학년융합': [],
-                            '2학년학점제': [],
-                            '3학년제작': [],
-                            '3학년학점제': []
+                            'year2_convergence': [],
+                            'year2_credit': [],
+                            'year3_production': [],
+                            'year3_credit': []
                         };
 
                         selectedSubjectsList.forEach(selected => {
                             const typeKey = (selected.type || '').replace('코스', '').replace(/\s/g, '');
                             console.log('교과목 타입 변환:', selected.type, '->', typeKey);
-                            if (groupedSubjects.hasOwnProperty(typeKey)) {
-                                groupedSubjects[typeKey].push(selected.subject);
+                            if (typeKey === '2학년융합') {
+                                groupedSubjects.year2_convergence.push(selected.subject);
+                            } else if (typeKey === '2학년학점제') {
+                                groupedSubjects.year2_credit.push(selected.subject);
+                            } else if (typeKey === '3학년제작') {
+                                groupedSubjects.year3_production.push(selected.subject);
+                            } else if (typeKey === '3학년학점제') {
+                                groupedSubjects.year3_credit.push(selected.subject);
                             }
                         });
 
@@ -228,17 +234,17 @@
 
                             let rowSubjects = [];
                             switch(type) {
-                                case '2학년융합':
-                                    rowSubjects = (row['2학년융합'] || '').split(',').map(s => s.trim());
+                                case 'year2_convergence':
+                                    rowSubjects = (row.year2_convergence || '').split(',').map(s => s.trim());
                                     break;
-                                case '2학년학점제':
-                                    rowSubjects = (row['2학년학점제'] || '').split(',').map(s => s.trim());
+                                case 'year2_credit':
+                                    rowSubjects = (row.year2_credit || '').split(',').map(s => s.trim());
                                     break;
-                                case '3학년제작':
-                                    rowSubjects = (row['3학년제작'] || '').split(',').map(s => s.trim());
+                                case 'year3_production':
+                                    rowSubjects = (row.year3_production || '').split(',').map(s => s.trim());
                                     break;
-                                case '3학년학점제':
-                                    rowSubjects = (row['3학년학점제'] || '').split(',').map(s => s.trim());
+                                case 'year3_credit':
+                                    rowSubjects = (row.year3_credit || '').split(',').map(s => s.trim());
                                     break;
                             }
 
@@ -289,23 +295,23 @@
 
                     if (matchingRow) {
                         console.log('\n=== 연관 정보 ===');
-                        console.log('자격증 목록:', matchingRow.자격증목록);
-                        console.log('진출가능직업:', matchingRow.진출가능직업);
-                        console.log('진학가능학과:', matchingRow.진학가능학과);
+                        console.log('자격증 목록:', matchingRow.certificates);
+                        console.log('진출가능직업:', matchingRow.possible_jobs);
+                        console.log('진학가능학과:', matchingRow.possible_departments);
                         
                         // 자격증, 직업, 학과 정보 처리
-                        if (matchingRow.자격증목록) {
-                            matchingRow.자격증목록.split(',').forEach(cert => {
+                        if (matchingRow.certificates) {
+                            matchingRow.certificates.split(',').forEach(cert => {
                                 if (cert.trim()) certificates.add(cert.trim());
                             });
                         }
-                        if (matchingRow.진출가능직업) {
-                            matchingRow.진출가능직업.split(',').forEach(job => {
+                        if (matchingRow.possible_jobs) {
+                            matchingRow.possible_jobs.split(',').forEach(job => {
                                 if (job.trim()) jobs.add(job.trim());
                             });
                         }
-                        if (matchingRow.진학가능학과) {
-                            matchingRow.진학가능학과.split(',').forEach(dept => {
+                        if (matchingRow.possible_departments) {
+                            matchingRow.possible_departments.split(',').forEach(dept => {
                                 if (dept.trim()) departments.add(dept.trim());
                             });
                         }
