@@ -140,50 +140,77 @@
             right: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            width: 250px;
-            height: 80vh;
+            width: 125px; /* 너비를 절반으로 줄임 */
+            height: 40vh; /* 높이를 절반으로 줄임 */
             background: white;
             border: 2px solid #bfdbfe;
             border-radius: 1rem;
             padding: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* 글자 크기 축소 */
             z-index: 40;
             display: flex;
             flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .selected-subjects-container.hidden {
+            transform: translate(calc(100% + 1rem), -50%);
+        }
+        .toggle-subjects-btn {
+            position: fixed;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3b82f6;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            z-index: 41;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .toggle-subjects-btn:hover {
+            background: #2563eb;
+        }
+        .toggle-subjects-btn.hidden {
+            transform: translate(calc(100% + 1rem), -50%);
         }
         #selected-subjects-list {
             flex: 1;
             overflow-y: auto;
-            margin: 1rem 0;
+            margin: 0.5rem 0;
         }
         .selected-subject-item {
             background: #eff6ff;
-            padding: 0.5rem;
-            margin: 0.5rem 0;
-            border-radius: 0.5rem;
+            padding: 0.25rem;
+            margin: 0.25rem 0;
+            border-radius: 0.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 0.7rem;
         }
         .remove-subject {
             color: #ef4444;
             cursor: pointer;
-            padding: 0.25rem;
-            font-size: 1.25rem;
+            padding: 0.15rem;
+            font-size: 1rem;
             font-weight: bold;
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             transition: background-color 0.2s;
         }
-        .remove-subject:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-        /* 모바일 환경을 위한 미디어 쿼리 추가 */
+        /* 모바일 환경을 위한 미디어 쿼리 수정 */
         @media (max-width: 768px) {
             .selected-subjects-container {
                 position: fixed;
@@ -193,30 +220,29 @@
                 top: auto;
                 transform: none;
                 width: 100%;
-                height: 40vh;
+                height: 20vh;
                 border-radius: 1rem 1rem 0 0;
                 margin: 0;
                 z-index: 50;
             }
-
-            /* 선택된 교과 목록이 표시될 때 메인 콘텐츠 영역의 하단 여백 조정 */
+            .selected-subjects-container.hidden {
+                transform: translateY(100%);
+            }
+            .toggle-subjects-btn {
+                position: fixed;
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%);
+                top: auto;
+            }
+            .toggle-subjects-btn.hidden {
+                transform: translate(-50%, 100%);
+            }
             main {
-                padding-bottom: 45vh;
+                padding-bottom: 25vh;
             }
-
-            /* 선택된 교과 목록의 스크롤 영역 최적화 */
             #selected-subjects-list {
-                max-height: calc(40vh - 180px);
-                overflow-y: auto;
-            }
-
-            /* 하단 네비게이션 버튼 위치 조정 */
-            .fixed.bottom-0 {
-                position: relative;
-                bottom: auto;
-                background: transparent;
-                box-shadow: none;
-                padding: 0.5rem;
+                max-height: calc(20vh - 100px);
             }
         }
     </style>
@@ -619,12 +645,49 @@
                 this.closest('.popup').classList.remove('active');
             });
         });
+
+        // 토글 버튼 기능 추가
+        const toggleBtn = document.getElementById('toggleSubjectsBtn');
+        const subjectsContainer = document.querySelector('.selected-subjects-container');
+        let isVisible = true;
+
+        toggleBtn.addEventListener('click', function() {
+            isVisible = !isVisible;
+            subjectsContainer.classList.toggle('hidden');
+            
+            // 토글 버튼 아이콘 변경
+            if (isVisible) {
+                toggleBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3h18v18H3z"/>
+                        <path d="M3 9h18"/>
+                        <path d="M3 15h18"/>
+                    </svg>
+                `;
+            } else {
+                toggleBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3h18v18H3z"/>
+                        <path d="M9 3v18"/>
+                        <path d="M15 3v18"/>
+                    </svg>
+                `;
+            }
+        });
     });
     </script>
 </head>
 <body class="bg-gradient-to-b from-blue-50 to-white min-h-screen">
     <!-- 웹페이지의 실제 내용을 담는 본문 부분입니다. -->
     <main class="p-4 max-w-4xl mx-auto pb-20">
+        <!-- 토글 버튼 추가 -->
+        <button class="toggle-subjects-btn" id="toggleSubjectsBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3h18v18H3z"/>
+                <path d="M3 9h18"/>
+                <path d="M3 15h18"/>
+            </svg>
+        </button>
         <!-- 메인 콘텐츠 영역입니다. 좌우 자동 마진으로 중앙에 배치하고 최대 너비를 설정합니다. 하단에 여백을 추가합니다. -->
         <!-- 상단 헤더 -->
         <div class="w-full text-center py-8">
