@@ -242,6 +242,52 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('JSON 로딩 실패:', error);
         });
 });
+/*새로 삽입한 코드*/
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollContainer = document.querySelector('.scrollable');
+    let isDragging = false;
+    let startY;
+    let scrollTop;
+    let dragStartTime;
+
+    scrollContainer.addEventListener('mousedown', function(e) {
+        dragStartTime = Date.now();
+        startY = e.pageY - scrollContainer.scrollTop;
+        scrollTop = scrollContainer.scrollTop;
+        isDragging = false;
+    });
+
+    scrollContainer.addEventListener('mousemove', function(e) {
+        if (startY === undefined) return;
+
+        const y = e.pageY - scrollContainer.scrollTop;
+        const walk = Math.abs(y - startY);
+
+        if (walk > 5 || Date.now() - dragStartTime > 200) {
+            isDragging = true;
+            e.preventDefault();
+            const walk = (y - startY) * 2;
+            scrollContainer.scrollTop = scrollTop - walk;
+        }
+    });
+
+    scrollContainer.addEventListener('mouseup', function(e) {
+        isDragging = false;
+        startY = undefined;
+        scrollTop = undefined;
+    });
+
+    scrollContainer.addEventListener('mouseleave', function() {
+        isDragging = false;
+        startY = undefined;
+        scrollTop = undefined;
+    });
+
+    scrollContainer.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+    });
+});
+/*새로 삽입한 코드*/
 </script>
 
 </body>
